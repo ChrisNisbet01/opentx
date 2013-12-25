@@ -358,13 +358,13 @@ int AudioQueue::mixWav(AudioContext &context, AudioBuffer *buffer, int volume, u
     if (result == FR_OK) {
       result = f_read(&context.state.wav.file, wavBuffer, RIFF_CHUNK_SIZE+8, &read);
       if (result == FR_OK && read == RIFF_CHUNK_SIZE+8 && !memcmp(wavBuffer, "RIFF", 4) && !memcmp(wavBuffer+8, "WAVEfmt ", 8)) {
-        uint32_t size = *((uint32_t *)(wavBuffer+16));
+        uint32_t size = *((uint32_t *)(wavBuffer+16));  // XXX assumes processor endianness matches file endianness
         result = (size < 256 ? f_read(&context.state.wav.file, wavBuffer, size+8, &read) : FR_DENIED);
         if (result == FR_OK && read == size+8) {
           context.state.wav.codec = ((uint16_t *)wavBuffer)[0];
           context.state.wav.freq = ((uint16_t *)wavBuffer)[2];
           uint32_t *wavSamplesPtr = (uint32_t *)(wavBuffer + size);
-          uint32_t size = wavSamplesPtr[1];
+          uint32_t size = wavSamplesPtr[1];  // XXX assumes processor endianness matches file endianness
           if (context.state.wav.freq != 0 && context.state.wav.freq * (AUDIO_SAMPLE_RATE / context.state.wav.freq) == AUDIO_SAMPLE_RATE) {
             context.state.wav.resampleRatio = (AUDIO_SAMPLE_RATE / context.state.wav.freq);
             context.state.wav.readSize = (context.state.wav.codec == CODEC_ID_PCM_S16LE ? 2*AUDIO_BUFFER_SIZE : AUDIO_BUFFER_SIZE) / context.state.wav.resampleRatio;
