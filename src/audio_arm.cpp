@@ -368,20 +368,19 @@ int AudioQueue::mixWav(AudioContext &context, AudioBuffer *buffer, int volume, u
             result = FR_DENIED;
           }
           while (result == FR_OK && memcmp(wavSamplesPtr, "data", 4) != 0) {
-            if ( (result=f_lseek(&context.state.wav.file, f_tell(&context.state.wav.file) + size)) != FR_OK )
-                break;
-            /* 
-                Now read the first 8 bytes of the next chunk, which contains the chunk type and size to follow.
-            */
-            if ( (result=f_read(&context.state.wav.file, wavBuffer, 8, &read)) != FR_OK )
-                break;
-            if ( read != 8 )
+            if ( (result=f_lseek(&context.state.wav.file, f_tell(&context.state.wav.file)+size)) == FR_OK )
+            {
+                if ( (result=f_read(&context.state.wav.file, wavBuffer, 8, &read)) == FR_OK )
                 {
-                result = FR_DENIED;
-                break;
+                    if ( read != 8 )
+                        result = FR_DENIED;
+                    else
+                    {
+                        wavSamplesPtr = (uint32_t *)wavBuffer;  /* XXX can we be certain that wavBuffer is WORD aligned? */
+                        size = wavSamplesPtr[1];  // XXX assumes processor endianness matches file endianness
+                    }
                 }
-            wavSamplesPtr = (uint32_t *)wavBuffer;  /* XXX can we be certain that wavBuffer is WORD aligned? */
-            size = wavSamplesPtr[1];  // XXX assumes processor endianness matches file endianness
+            }
           }
           context.state.wav.size = size;
         }
