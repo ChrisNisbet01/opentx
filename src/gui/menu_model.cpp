@@ -103,6 +103,7 @@ static int8_t s_copySrcRow;
 static int8_t s_copyTgtOfs;
 #if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
 static uint8_t    need_trainer_switch_prompt;
+static uint8_t    need_inhibit_swh;
 #endif
 
 uint8_t eeFindEmptyModel(uint8_t id, bool down)
@@ -942,6 +943,7 @@ void menuModelSetup(uint8_t event)
   MENU_TAB({ 0, 0, CASE_PCBTARANIS(0) 2, IF_PERSISTENT_TIMERS(0) 0, 0, 2, IF_PERSISTENT_TIMERS(0) 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, NAVIGATION_LINE_BY_LINE|(NUM_STICKS+NUM_POTS+NUM_ROTARY_ENCODERS-1), LABEL(InternalModule), 0, IF_PORT1_ON(1), IF_PORT1_ON(IS_D8_RX(0) ? (uint8_t)1 : (uint8_t)2), IF_PORT1_ON(FAILSAFE_ROWS(0)), LABEL(ExternalModule), (g_model.externalModule==MODULE_TYPE_XJT || IS_MODULE_DSM2(EXTERNAL_MODULE)) ? (uint8_t)1 : (uint8_t)0, PORT2_CHANNELS_ROWS(), (IS_MODULE_XJT(1) && IS_D8_RX(1)) ? (uint8_t)1 : (IS_MODULE_PPM(1) || IS_MODULE_XJT(1) || IS_MODULE_DSM2(1)) ? (uint8_t)2 : HIDDEN_ROW, IF_PORT2_XJT(FAILSAFE_ROWS(1)), LABEL(Trainer), 0, TRAINER_CHANNELS_ROWS(), IF_TRAINER_ON(2)});
 #if defined(SWH_RANGE_TEST)
     need_trainer_switch_prompt = 0;
+    need_inhibit_swh = 0;
 #endif
 #elif defined(CPUM64)
   #define CURSOR_ON_CELL             (true)
@@ -1324,7 +1326,13 @@ void menuModelSetup(uint8_t event)
                   newFlag = PXX_SEND_RXNUM;
                 else if (l_posHorz == 2) {
 #if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
-                    if ( g_eeGeneral.rangeNeedsSwH != 0 && switchState(SW_RANGE) == 0 )
+                    if ( g_eeGeneral.rangeNeedsSwH != 0 )
+                    {
+                        /* while in range test mode, I want to inhibit the range test switch's normal operation. */
+                        inhibit_swh( 1 );
+                        need_inhibit_swh = 1;
+                    }
+                    if ( g_eeGeneral.rangeNeedsSwH != 0 && switchStateRaw(SW_RANGE) == 0 )
                         need_trainer_switch_prompt = 1;
                     else
 #endif
@@ -1595,6 +1603,8 @@ void menuModelSetup(uint8_t event)
     {
     displayPopup(STR_HOLD_TRAINER_KEY);
     }
+  if ( need_inhibit_swh == 0 )  /* no longer need to inhibit normal SwH operation */
+    inhibit_swh( 0 );
 #endif
 #endif
 }

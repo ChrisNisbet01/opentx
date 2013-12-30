@@ -38,6 +38,8 @@
 
 // TODO FrSky code included PIN_BIND and PIN_POWER
 
+static volatile int swh_is_inhibited;
+
 uint32_t readKeys()
 {
   register uint32_t d = GPIOD->IDR;
@@ -117,7 +119,12 @@ void readKeysAndTrims()
   }
 }
 
-bool switchState(EnumKeys enuk)
+void inhibit_swh ( int inhibit )
+{
+    swh_is_inhibited = inhibit;
+}
+
+bool switchStateRaw(EnumKeys enuk)
 {
   register uint32_t xxx = 0;
 
@@ -219,6 +226,22 @@ bool switchState(EnumKeys enuk)
   }
 
   return xxx;
+}
+
+bool switchState(EnumKeys enuk)
+{
+    if ( swh_is_inhibited == 0 || (enuk != SW_SH0 && enuk != SW_SH2) )
+        return switchStateRaw(enuk);
+
+    /* 
+        Must be inhibited and switch is either SW_SH0 or SW_SH2.
+        When SwH operation is inhibited, we say that SH0 is always active,
+        and SH2 is always inactive.
+    */
+    if ( enuk == SW_SH0 )
+        return 1;
+    /* must be SW_SH2 */
+    return 0;
 }
 
 #if !defined(SIMU)

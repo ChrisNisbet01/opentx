@@ -775,7 +775,9 @@ enum PowerState {
   e_power_off
 };
 
+void inhibit_swh ( int inhibit );
 bool switchState(EnumKeys enuk);
+bool switchStateRaw(EnumKeys enuk);
 void readKeysAndTrims();
 
 uint16_t evalChkSum();
