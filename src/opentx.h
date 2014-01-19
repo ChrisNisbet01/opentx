@@ -110,6 +110,12 @@
 #define CASE_PWM_BACKLIGHT(x)
 #endif
 
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+#define IF_SWH_RANGE_TEST(x) x,
+#else
+#define IF_SWH_RANGE_TEST(x) x,
+#endif
+
 #if defined(FRSKY) && defined(FRSKY_HUB) && defined(GPS)
 #define IF_GPS(x) x,
 #else
