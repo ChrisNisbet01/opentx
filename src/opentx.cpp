@@ -884,7 +884,7 @@ getvalue_t getValue(uint8_t i)
 #endif
   else if (i<MIXSRC_LAST_CSW) return getSwitch(SWSRC_THR+i+1-MIXSRC_THR) ? 1024 : -1024;
 #endif
-  else if (i<MIXSRC_LAST_PPM) { int16_t x = g_ppmIns[i+1-MIXSRC_PPM1]; if (i<MIXSRC_PPM1+NUM_CAL_PPM) { x-= g_eeGeneral.trainer.calib[i+1-MIXSRC_PPM1]; } return x*2; }
+  else if (i<MIXSRC_LAST_PPM) { int16_t x = g_ppmIns[i+1-MIXSRC_PPM1]; if (i<MIXSRC_PPM1+NUM_CAL_PPM-1) { x-= g_eeGeneral.trainer.calib[i+1-MIXSRC_PPM1]; } return x*2; }
   else if (i<MIXSRC_LAST_CH) return ex_chans[i+1-MIXSRC_CH1];
 #if defined(GVARS)
   else if (i<MIXSRC_LAST_GVAR) return GVAR_VALUE(i+1-MIXSRC_GVAR1, getGVarFlightPhase(s_perout_flight_phase, i+1-MIXSRC_GVAR1));
@@ -898,7 +898,7 @@ getvalue_t getValue(uint8_t i)
 #if defined(FRSKY_SPORT)
   else if (i<MIXSRC_FIRST_TELEM-1+TELEM_ALT) return frskyData.hub.baroAltitude;
 #elif defined(FRSKY_HUB) || defined(WS_HOW_HIGH)
-  else if (i<MIXSRC_FIRST_TELEM-1+TELEM_ALT) return TELEMETRY_ALT_BP;
+  else if (i<MIXSRC_FIRST_TELEM-1+TELEM_ALT) return TELEMETRY_RELATIVE_BARO_ALT_BP;
 #endif
 #if defined(FRSKY_HUB)
   else if (i<MIXSRC_FIRST_TELEM-1+TELEM_RPM) return frskyData.hub.rpm;
@@ -907,7 +907,7 @@ getvalue_t getValue(uint8_t i)
   else if (i<MIXSRC_FIRST_TELEM-1+TELEM_T2) return frskyData.hub.temperature2;
   else if (i<MIXSRC_FIRST_TELEM-1+TELEM_SPEED) return TELEMETRY_GPS_SPEED_BP;
   else if (i<MIXSRC_FIRST_TELEM-1+TELEM_DIST) return frskyData.hub.gpsDistance;
-  else if (i<MIXSRC_FIRST_TELEM-1+TELEM_GPSALT) return TELEMETRY_GPS_ALT_BP;
+  else if (i<MIXSRC_FIRST_TELEM-1+TELEM_GPSALT) return TELEMETRY_RELATIVE_GPS_ALT_BP;
   else if (i<MIXSRC_FIRST_TELEM-1+TELEM_CELL) return (int16_t)frskyData.hub.minCellVolts * 2;
   else if (i<MIXSRC_FIRST_TELEM-1+TELEM_CELLS_SUM) return (int16_t)frskyData.hub.cellsSum;
   else if (i<MIXSRC_FIRST_TELEM-1+TELEM_VFAS) return (int16_t)frskyData.hub.vfas;
@@ -1013,7 +1013,7 @@ bool getSwitch(int8_t swtch)
           if (cs->v1 >= MIXSRC_FIRST_TELEM) {
             if ((!TELEMETRY_STREAMING() && cs->v1 >= MIXSRC_FIRST_TELEM+TELEM_FIRST_STREAMED_VALUE-1) || IS_FAI_FORBIDDEN(cs->v1-1))
               return swtch > 0 ? false : true;
-
+              	
             y = convertCswTelemValue(cs);
 
 #if defined(FRSKY_HUB) && defined(GAUGES)
@@ -2497,16 +2497,14 @@ void evalFunctions()
   static rotenc_t rePreviousValues[ROTARY_ENCODERS];
 #endif
 
-  for (uint8_t i=0; i<NUM_CHNOUT; i++)
+  for (uint8_t i=0; i<NUM_CHNOUT; i++) {
     safetyCh[i] = -128; // not defined
+  }
 
 #if defined(GVARS)
-  for (uint8_t i=0; i<4; i++)
+  for (uint8_t i=0; i<NUM_STICKS; i++) {
     trimGvar[i] = -1;
-#endif
-
-#if !defined(PCBSTD)
-  uint8_t mSwitchDurationIncremented = 0;
+  }
 #endif
 
   for (uint8_t i=0; i<NUM_CFN; i++) {
@@ -2526,15 +2524,11 @@ void evalFunctions()
       uint8_t short_long = 0;
       uint8_t mswitch = 0;
 
-      if (swtch == SWSRC_TRAINER_LONG) {
-        short_long = 2;
-        swtch = SWSRC_TRAINER;
-        mswitch = 0;
-      }
-      else if (swtch == SWSRC_TRAINER_SHORT) {
-        short_long = 1;
-        swtch = SWSRC_TRAINER;
-        mswitch = 0;
+      if (swtch >= SWSRC_TRAINER_SHORT) {
+        swtch -= SWSRC_TRAINER_SHORT;
+        mswitch = (swtch >> 1);
+        short_long = 1 + (swtch & 1);
+        swtch = SWSRC_TRAINER + mswitch;
       }
       else
 
@@ -2557,10 +2551,6 @@ void evalFunctions()
       bool active = getSwitch(swtch);
       if (active) newActiveSwitches |= switch_mask;
       if (momentary || short_long) {
-
-#if !defined(PCBSTD)
-        bool swState = active;
-#endif
 
         if (MOMENTARY_START_TEST()) {
 
@@ -2589,18 +2579,6 @@ void evalFunctions()
           active = (activeFnSwitches & switch_mask);
           momentary = false;
         }
-#if !defined(PCBSTD)
-        if (short_long && !(mSwitchDurationIncremented & (1<<mswitch))) {
-          mSwitchDurationIncremented |= (1<<mswitch);
-          if (swState) {
-            if (mSwitchDuration[mswitch] < 255)
-              mSwitchDuration[mswitch]++;
-          }
-          else {
-            mSwitchDuration[mswitch] = 0;
-          }
-        }
-#endif
       }
 #if !defined(CPUARM)
       else if (CFN_FUNC(sd) == FUNC_PLAY_BOTH) {
@@ -2717,7 +2695,7 @@ void evalFunctions()
               if (CFN_FUNC(sd) == FUNC_PLAY_TRACK && param > 250)
                 param = GVAR_VALUE(param-251, getGVarFlightPhase(s_perout_flight_phase, param-251));
 #endif
-              PUSH_CUSTOM_PROMPT(active ? param : param+1, i+1);
+              PUSH_CUSTOM_PROMPT((active||short_long) ? param : param+1, i+1);
             }
           }
         }
@@ -2796,9 +2774,22 @@ void evalFunctions()
   activeFnSwitches = newActiveFnSwitches;
   activeFunctions  = newActiveFunctions;
 
+#if !defined(PCBSTD)
+  for (int i=0; i<1+NUM_ROTARY_ENCODERS; i++) {
+    if (getSwitch(SWSRC_TRAINER+i)) {
+      if (mSwitchDuration[i] < 255)
+        mSwitchDuration[i]++;
+    }
+    else {
+      mSwitchDuration[i] = 0;
+    }
+  }
+#endif
+
 #if defined(ROTARY_ENCODERS) && defined(GVARS)
-  for (uint8_t i=0; i<ROTARY_ENCODERS; i++)
+  for (uint8_t i=0; i<ROTARY_ENCODERS; i++) {
     rePreviousValues[i] = (g_rotenc[i] / ROTARY_ENCODER_GRANULARITY);
+  }
 #endif
 }
 
@@ -2886,8 +2877,6 @@ void perOut(uint8_t mode, uint8_t tick10ms)
   bitfield_channels_t dirtyChannels = (bitfield_channels_t)-1; // all dirty when mixer starts
 
   do {
-
-    // TRACE("[pass %d]", pass);
 
     bitfield_channels_t passDirtyChannels = 0;
 
@@ -3203,15 +3192,6 @@ void doMixerCalculations()
     s_last_phase = phase;
   }
 
-  if (tick10ms) {
-#if defined(CPUARM)
-    requiredSpeakerVolume = g_eeGeneral.speakerVolume + VOLUME_LEVEL_DEF;
-#endif
-
-    // the reason this needs to be done before limits is the applyLimit function; it checks for safety switches which would be not initialized otherwise
-    evalFunctions();
-  }
-
   int32_t weight = 0;
   if (s_fade_flight_phases) {
     memclear(sum_chans512, sizeof(sum_chans512));
@@ -3234,6 +3214,16 @@ void doMixerCalculations()
     perOut(e_perout_mode_normal, tick10ms);
   }
   
+  //========== FUNCTIONS ===============
+  // must be done after mixing because some functions use the inputs/channels values
+  // must be done before limits because of the applyLimit function: it checks for safety switches which would be not initialized otherwise
+  if (tick10ms) {
+#if defined(CPUARM)
+    requiredSpeakerVolume = g_eeGeneral.speakerVolume + VOLUME_LEVEL_DEF;
+#endif
+    evalFunctions();
+  }
+
   //========== LIMITS ===============
   for (uint8_t i=0; i<NUM_CHNOUT; i++) {
     // chans[i] holds data from mixer.   chans[i] = v*weight => 1024*256
@@ -4333,7 +4323,9 @@ inline void opentxInit(OPENTX_INIT_ARGS)
   init_trainer_capture();
 #endif
 
+#if !defined(CPUARM)
   doMixerCalculations();
+#endif
 
   startPulses();
 
