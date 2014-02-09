@@ -449,23 +449,33 @@ int AudioQueue::mixBeep(AudioContext &context, AudioBuffer *buffer, int volume, 
   if (fragment.tone.duration > 0) {
     result = AUDIO_BUFFER_SIZE;
     if (fragment.tone.freq && context.state.tone.freq!=fragment.tone.freq && (!fragment.tone.freqIncr || abs(context.state.tone.freq-fragment.tone.freq) > 100)) {
-      int periods = BEEP_POINTS_COUNT / ((AUDIO_SAMPLE_RATE / fragment.tone.freq) + 1);
-      context.state.tone.count = (periods * AUDIO_SAMPLE_RATE) / fragment.tone.freq;
-      if (context.state.tone.idx >= context.state.tone.count) context.state.tone.idx = 0;
-#if 1
-      for (unsigned int i=0; i<context.state.tone.count; i++)
-        context.state.tone.points[i] = sineValues[((DIM(sineValues)*periods*i)/context.state.tone.count) % DIM(sineValues)] * (toneVolumes[2+volume]);
-#else
-      double t = (M_PI * 2 * periods) / context.state.tone.count;
-      for (unsigned int i=0; i<context.state.tone.count; i++)
-        context.state.tone.points[i] = sin(t*i) * (toneVolumes[2+volume]);
-#endif
+      for ( int harmonic=0; harmonic < NB_HARMONICS; harmonic++ )
+      {
+        uint16_t freq;
+        switch ( harmonic )
+        {
+            case 1:
+                freq = fragment.tone.freq / (harmonic+1);
+                break;
+            case 2:
+                freq = fragment.tone.freq + (fragment.tone.freq >> 2);
+                break;
+            default:
+                freq = fragment.tone.freq;
+        }
+          int periods = BEEP_POINTS_COUNT / ((AUDIO_SAMPLE_RATE / freq) + 1);
+          context.state.tone.count[harmonic] = (periods * AUDIO_SAMPLE_RATE) / freq;
+          if (context.state.tone.idx[harmonic] >= context.state.tone.count[harmonic]) context.state.tone.idx[harmonic] = 0;
+    #if 1
+          for (unsigned int i=0; i<context.state.tone.count[harmonic]; i++)
+            context.state.tone.points[harmonic][i] = sineValues[((DIM(sineValues)*periods*i)/context.state.tone.count[harmonic]) % DIM(sineValues)] * (toneVolumes[2+volume-harmonic]);
+    #else
+          double t = (M_PI * 2 * periods) / context.state.tone.count;
+          for (unsigned int i=0; i<context.state.tone.count; i++)
+            context.state.tone.points[i] = sin(t*i) * (toneVolumes[2+volume]);
+    #endif
+      }
     }
-
-    if (fragment.tone.freqIncr)
-      fragment.tone.freq += AUDIO_BUFFER_DURATION * fragment.tone.freqIncr;
-    else
-      fragment.tone.freq = 0;
 
     duration = AUDIO_BUFFER_DURATION;
     int points = AUDIO_BUFFER_SIZE;
@@ -477,14 +487,22 @@ int AudioQueue::mixBeep(AudioContext &context, AudioBuffer *buffer, int volume, 
       end = true;
     }
 
-    for (int i=0; i<points; i++) {
-      mix(&buffer->data[i], context.state.tone.points[context.state.tone.idx], fade);
-      context.state.tone.idx = context.state.tone.idx + 1;
-      if (context.state.tone.idx >= context.state.tone.count) {
-        context.state.tone.idx = 0;
-        if (end && i+BEEP_POINTS_COUNT>points) break;
-      }
+    for ( int harmonic=0; harmonic < NB_HARMONICS; harmonic++ )
+        for (int i=0; i<points; i++) {
+        {
+          mix(&buffer->data[i], context.state.tone.points[harmonic][context.state.tone.idx[harmonic]], fade);
+          context.state.tone.idx[harmonic]++;
+          if (context.state.tone.idx[harmonic] >= context.state.tone.count[harmonic]) {
+            context.state.tone.idx[harmonic] = 0;
+            if (end && i+BEEP_POINTS_COUNT>points) break;
+          }
+        }
     }
+
+    if (fragment.tone.freqIncr)
+      fragment.tone.freq += AUDIO_BUFFER_DURATION * fragment.tone.freqIncr;
+    else
+      fragment.tone.freq = 0;
 
     fragment.tone.duration -= duration;
     if (fragment.tone.duration > 0)

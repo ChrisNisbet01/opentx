@@ -103,11 +103,11 @@ class AudioContext {
         uint16_t readSize;
       } wav;
 #endif
-
+#define NB_HARMONICS    3
       struct {
-        int16_t points[BEEP_POINTS_COUNT];
-        uint8_t  count;
-        uint8_t  idx;
+        int16_t points[NB_HARMONICS][BEEP_POINTS_COUNT];
+        uint8_t  count[NB_HARMONICS];
+        uint8_t  idx[NB_HARMONICS];
         uint16_t freq;
       } tone;
     } state;
