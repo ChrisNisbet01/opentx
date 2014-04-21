@@ -37,13 +37,13 @@
 #include "opentx.h"
 #include "inttypes.h"
 #include "string.h"
-#if defined(DDCLIB)
+#if defined(DDC_TARGET)
 extern "C" {
 #include "opentx_ddc.h"
 }
 #endif
 
-#if defined(DDCLIB)
+#if defined(DDC_TARGET)
 void *current_ddc_ctx;
 #define DDC_BUFSIZE (10*1024)
 char ddc_buffer[DDC_BUFSIZE];
@@ -924,7 +924,7 @@ void eeLoadModel(uint8_t id)
 #endif
 
 #if defined(SDCARD)
-#if defined(DDCLIB)
+#if defined(DDC_TARGET)
     if ( current_ddc_ctx != NULL )
     {
         unload_ddc_file( current_ddc_ctx );
@@ -975,7 +975,7 @@ void eeLoadModel(uint8_t id)
 #endif
 
 #if defined(SDCARD)
-#if defined(DDCLIB)
+#if defined(DDC_TARGET)
     if (sdMounted() != 0) 
     {
         // temp debug just read a single DDC file. In future, load DDC based upon model.

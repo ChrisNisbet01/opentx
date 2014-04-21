@@ -664,12 +664,12 @@ ifeq ($(PCB), TARANIS)
     CPPSRC += targets/taranis/a7105_driver.cpp
   endif
   ifeq ($(DDC), YES)
-    CPPDEFS += -DNOPRINT -DNOWRITE -DDDCLIB
+    CPPDEFS += -DNOPRINT -DNOWRITE -DDDC_TARGET
     EXTRAINCDIRS += ddc/include
     CPPSRC += ddc/src/taranis_interface.cpp
     DDCOBJS = ddc/src/taranis.c ddc/src/processor.c ddc/src/core.c 
     DDCOBJS += ddc/src/or.c ddc/src/and.c ddc/src/xor.c ddc/src/not.c ddc/src/oneshot.c ddc/src/comparator.c ddc/src/beep.c ddc/src/end.c 
-    DDCOBJS += ddc/src/add.c
+    DDCOBJS += ddc/src/add.c ddc/src/subtract.c ddc/src/switch.c ddc/src/transfer.c ddc/src/negate.c ddc/src/dom.c ddc/src/dob.c
     DDCOBJS += ddc/src/branch.c ddc/src/const.c ddc/src/cal_stick.c ddc/src/lai.c
 	SRC += $(DDCOBJS)
   endif

@@ -35,7 +35,7 @@
  */
 
 #include "opentx.h"
-#if defined(DDCLIB)
+#if defined(DDC_TARGET)
 extern "C" {
 #include "opentx_ddc.h"
 }
@@ -4352,7 +4352,7 @@ void mixerTask(void * pdata)
       if (tick10ms) 
       {
         checkTrims();
-#if defined(DDCLIB)
+#if defined(DDC_TARGET)
         // temp debug run the DDC at 100Hz
         if ( current_ddc_ctx != NULL )
         {
