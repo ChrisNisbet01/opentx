@@ -46,6 +46,7 @@
 #define SOUNDS_PATH_LNG_OFS (sizeof(SOUNDS_PATH)-3)
 #define SYSTEM_SOUNDS_PATH  SOUNDS_PATH "/SYSTEM" // no trailing slash = important
 #define BITMAPS_PATH        ROOT_PATH "BMP"
+#define DDC_PATH            ROOT_PATH "ddc"
 
 #define MODELS_EXT          ".bin"
 #define LOGS_EXT            ".csv"

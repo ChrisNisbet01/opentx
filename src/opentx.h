@@ -1178,7 +1178,9 @@ extern int16_t applyLimits(uint8_t channel, int32_t value);
 extern uint16_t anaIn(uint8_t chan);
 extern int16_t thrAnaIn(uint8_t chan);
 extern int16_t calibratedStick[NUM_STICKS+NUM_POTS];
-
+#if defined(DDCLIB)
+extern void *current_ddc_ctx;
+#endif
 #define FLASH_DURATION 20 /*200ms*/
 
 extern uint8_t beepAgain;

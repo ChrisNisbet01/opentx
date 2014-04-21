@@ -35,7 +35,11 @@
  */
 
 #include "opentx.h"
-
+#if defined(DDCLIB)
+extern "C" {
+#include "opentx_ddc.h"
+}
+#endif
 #if defined(CPUARM)
 #define MIXER_STACK_SIZE    500
 #define MENUS_STACK_SIZE    1000
@@ -4345,7 +4349,17 @@ void mixerTask(void * pdata)
       CoEnterMutexSection(mixerMutex);
       bool tick10ms = doMixerCalculations();
       CoLeaveMutexSection(mixerMutex);
-      if (tick10ms) checkTrims();
+      if (tick10ms) 
+      {
+        checkTrims();
+#if defined(DDCLIB)
+        // temp debug run the DDC at 100Hz
+        if ( current_ddc_ctx != NULL )
+        {
+            run_ddc_file( current_ddc_ctx );
+        }
+#endif        
+      }
 
       if (heartbeat == HEART_WDT_CHECK) {
         wdt_reset();

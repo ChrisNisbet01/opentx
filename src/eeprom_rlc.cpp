@@ -37,6 +37,17 @@
 #include "opentx.h"
 #include "inttypes.h"
 #include "string.h"
+#if defined(DDCLIB)
+extern "C" {
+#include "opentx_ddc.h"
+}
+#endif
+
+#if defined(DDCLIB)
+void *current_ddc_ctx;
+#define DDC_BUFSIZE (10*1024)
+char ddc_buffer[DDC_BUFSIZE];
+#endif
 
 uint8_t   s_write_err = 0;    // error reasons
 RlcFile   theFile;  //used for any file operation
@@ -913,6 +924,13 @@ void eeLoadModel(uint8_t id)
 #endif
 
 #if defined(SDCARD)
+#if defined(DDCLIB)
+    if ( current_ddc_ctx != NULL )
+    {
+        unload_ddc_file( current_ddc_ctx );
+        current_ddc_ctx = NULL;
+    }
+#endif
     closeLogs();
 #endif
 
@@ -956,6 +974,15 @@ void eeLoadModel(uint8_t id)
     }
 #endif
 
+#if defined(SDCARD)
+#if defined(DDCLIB)
+    if (sdMounted() != 0) 
+    {
+        // temp debug just read a single DDC file. In future, load DDC based upon model.
+        current_ddc_ctx = load_ddc_file( DDC_PATH "/" "1.ddc", ddc_buffer, sizeof( ddc_buffer ) );
+    }
+#endif
+#endif
     resumeMixerCalculations();
     // TODO pulses should be started after mixer calculations ...
 
