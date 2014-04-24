@@ -1178,6 +1178,8 @@ extern int16_t applyLimits(uint8_t channel, int32_t value);
 extern uint16_t anaIn(uint8_t chan);
 extern int16_t thrAnaIn(uint8_t chan);
 extern int16_t calibratedStick[NUM_STICKS+NUM_POTS];
+extern int16_t  rawAnas [NUM_INPUTS];
+extern int16_t  anas [NUM_INPUTS];
 #if defined(DDC_TARGET)
 extern void *current_ddc_ctx;
 #endif
