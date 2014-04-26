@@ -1611,11 +1611,6 @@ void menuModelSetup(uint8_t event)
   if ( need_inhibit_swh == 0 )  /* no longer need to inhibit normal SwH operation */
     inhibit_swh( 0 );
 #endif
-    if ( get_ddc_error( current_ddc_ctx ) != 0 )
-    {
-        displayPopup("DDC error: ");
-        lcd_outdezAtt(16+4*FW, 5*FH, get_ddc_error( current_ddc_ctx ), BOLD);
-    }
 #endif
 }
 

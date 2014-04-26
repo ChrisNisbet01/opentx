@@ -4354,10 +4354,8 @@ void mixerTask(void * pdata)
         checkTrims();
 #if defined(DDC_TARGET)
         // temp debug run the DDC at 100Hz
-        if ( current_ddc_ctx != NULL )
-        {
-            run_ddc_file( current_ddc_ctx );
-        }
+        // TODO: find a way to run the DDC where so can be more certain about the run frequency
+        ddc_task();
 #endif        
       }
 

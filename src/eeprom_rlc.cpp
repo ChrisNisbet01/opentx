@@ -43,12 +43,6 @@ extern "C" {
 }
 #endif
 
-#if defined(DDC_TARGET)
-void *current_ddc_ctx;
-#define DDC_BUFSIZE (10*1024)
-char ddc_buffer[DDC_BUFSIZE];
-#endif
-
 uint8_t   s_write_err = 0;    // error reasons
 RlcFile   theFile;  //used for any file operation
 EeFs      eeFs;
@@ -925,11 +919,7 @@ void eeLoadModel(uint8_t id)
 
 #if defined(SDCARD)
 #if defined(DDC_TARGET)
-    if ( current_ddc_ctx != NULL )
-    {
-        unload_ddc_file( current_ddc_ctx );
-        current_ddc_ctx = NULL;
-    }
+    ddc_init();
 #endif
     closeLogs();
 #endif
@@ -978,8 +968,7 @@ void eeLoadModel(uint8_t id)
 #if defined(DDC_TARGET)
     if (sdMounted() != 0) 
     {
-        // temp debug just read a single DDC file. In future, load DDC based upon model.
-        current_ddc_ctx = load_ddc_file( DDC_PATH "/" "1.ddc", ddc_buffer, sizeof( ddc_buffer ) );
+        ddc_load_model_scripts();
     }
 #endif
 #endif
