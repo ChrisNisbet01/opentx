@@ -673,7 +673,7 @@ ifeq ($(PCB), TARANIS)
     DDCOBJS += ddc/src/flipflop.c ddc/src/transform.c ddc/src/playvalue.c ddc/src/getmixer.c ddc/src/analog_value.c ddc/src/playfile.c
     DDCOBJS += ddc/src/branch.c ddc/src/const.c ddc/src/cal_stick.c ddc/src/lai.c ddc/src/opentx_switch.c ddc/src/read_value.c
     DDCOBJS += ddc/src/multiply.c ddc/src/divide.c ddc/src/string_object.c ddc/src/system_io.c ddc/src/equals.c ddc/src/limit.c
-    DDCOBJS += ddc/src/exit_object.c
+    DDCOBJS += ddc/src/exit_object.c ddc/src/popup_object.c
 	SRC += $(DDCOBJS)
   endif
 endif

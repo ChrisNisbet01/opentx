@@ -155,6 +155,18 @@ const pm_uint8_t bchout_ar[] PROGMEM = {
     0x87, 0x8D, 0x93, 0x9C, 0xB1, 0xB4,
     0xC6, 0xC9, 0xD2, 0xD8, 0xE1, 0xE4 };
 
+#if defined(DDC_TARGET)
+static int ddc_lcd_locked;
+#define LCD_LOCKED() ddc_lcd_locked
+#endif
+
+#if defined(DDC_TARGET)
+void lock_lcd_for_ddc( void )
+{
+    ddc_lcd_locked = 1;
+}
+#endif
+
 uint8_t channel_order(uint8_t x)
 {
   return ( ((pgm_read_byte(bchout_ar + g_eeGeneral.templateSetup) >> (6-(x-1) * 2)) & 3 ) + 1 );
@@ -3836,26 +3848,32 @@ void perMain()
   StickScrollAllowed = 1 ;
 #endif
 
-  lcd_clear();
-  const char *warn = s_warning;
-  uint8_t menu = s_menu_count;
-
-  if (usbPlugged()) {
-    menuMainView(0);
-  }
-  else {
-    g_menuStack[g_menuStackPtr]((warn || menu) ? 0 : evt);
-    if (warn) DISPLAY_WARNING(evt);
-#if defined(NAVIGATION_MENUS)
-    if (menu) {
-      const char * result = displayMenu(evt);
-      if (result) {
-        menuHandler(result);
-        putEvent(EVT_MENU_UP);
-      }
-    }
+#if defined(DDC_TARGET)
+    if ( LCD_LOCKED() == 0 )
 #endif
-  }
+    {
+        lcd_clear();
+        const char *warn = s_warning;
+        uint8_t menu = s_menu_count;
+
+        if (usbPlugged()) {
+        menuMainView(0);
+        }
+        else {
+        g_menuStack[g_menuStackPtr]((warn || menu) ? 0 : evt);
+        if (warn) DISPLAY_WARNING(evt);
+        #if defined(NAVIGATION_MENUS)
+        if (menu) {
+          const char * result = displayMenu(evt);
+          if (result) {
+            menuHandler(result);
+            putEvent(EVT_MENU_UP);
+          }
+        }
+        #endif
+        }
+    }
+
 
   drawStatusLine();
   lcdRefresh();
@@ -4355,6 +4373,7 @@ void mixerTask(void * pdata)
 #if defined(DDC_TARGET)
         // temp debug run the DDC at 100Hz
         // TODO: find a way to run the DDC where so can be more certain about the run frequency
+        ddc_lcd_locked = 0; /* allow the menu to be updated unless DDC re-locks the LCD */
         ddc_task();
 #endif        
       }

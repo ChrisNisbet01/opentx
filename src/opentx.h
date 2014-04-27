@@ -1558,4 +1558,8 @@ void varioWakeup();
   extern const pm_uchar logo_taranis[];
 #endif
 
+#if defined(DDC_TARGET)
+extern void lock_lcd_for_ddc( void );
+
+#endif
 #endif
