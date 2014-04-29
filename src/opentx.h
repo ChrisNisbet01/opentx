@@ -1560,6 +1560,8 @@ void varioWakeup();
 
 #if defined(DDC_TARGET)
 extern void lock_lcd_for_ddc( void );
+extern void unlock_lcd_for_ddc( void );
+extern int is_lcd_locked( void );
 
 #endif
 #endif

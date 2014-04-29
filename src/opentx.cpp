@@ -163,8 +163,20 @@ static int ddc_lcd_locked;
 #if defined(DDC_TARGET)
 void lock_lcd_for_ddc( void )
 {
-    ddc_lcd_locked = 1;
+    ddc_lcd_locked++;
 }
+
+void unlock_lcd_for_ddc( void )
+{
+    if ( ddc_lcd_locked > 0 )
+        ddc_lcd_locked--;
+}
+
+int is_lcd_locked( void )
+{
+    return ddc_lcd_locked;
+}
+
 #endif
 
 uint8_t channel_order(uint8_t x)
@@ -4372,8 +4384,7 @@ void mixerTask(void * pdata)
         checkTrims();
 #if defined(DDC_TARGET)
         // temp debug run the DDC at 100Hz
-        // TODO: find a way to run the DDC where so can be more certain about the run frequency
-        ddc_lcd_locked = 0; /* allow the menu to be updated unless DDC re-locks the LCD */
+        // TODO: find a way to run the DDC where we can be more certain about the run frequency
         ddc_task();
 #endif        
       }
