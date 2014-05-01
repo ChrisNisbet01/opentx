@@ -87,6 +87,8 @@ void sportInit(void);
 
 void delaysInit(void);
 void delay_01us(uint16_t nb);
+void start_tim12( void );
+int stop_tim12( void );
 
 // SD driver
 #if defined(SIMU)

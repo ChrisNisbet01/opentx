@@ -45,8 +45,29 @@ void delaysInit(void)
   TIM13->CCMR1 = 0;
   TIM13->CR1 = 0x02;
   TIM13->DIER = 0;
+
+  // Timer 12
+  RCC->APB1ENR |= RCC_APB1ENR_TIM12EN;           // Enable clock
+  TIM12->PSC = (PERI1_FREQUENCY / 1000000) * TIMER_MULT_APB1 - 1;      // 1uS 
+  TIM12->CCER = 0;
+  TIM12->CCMR1 = 0;
+  TIM12->CR1 = 0x01;
+  TIM12->DIER = 0;
 }
-	
+
+void start_tim12( void )
+{
+  TIM12->EGR = 1;
+  TIM12->CNT = 0;
+  TIM12->CR1 = 0x01;
+}
+
+int stop_tim12( void )
+{
+  TIM12->CR1 = 0x00;
+  return TIM12->CNT;
+}
+
 void delay_01us(uint16_t nb)
 {
   TIM13->EGR = 1;

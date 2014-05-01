@@ -3154,6 +3154,11 @@ void perOut(uint8_t mode, uint8_t tick10ms)
 #define TIME_TO_WRITE() (s_eeDirtyMsk && (tmr10ms_t)(get_tmr10ms() - s_eeDirtyTime10ms) >= (tmr10ms_t)WRITE_DELAY_10MS)
 
 int32_t sum_chans512[NUM_CHNOUT] = {0};
+#if defined(DDC_TARGET)
+#if defined (DDC_MIXER_TEST)
+static int done_test = 0;
+#endif
+#endif
 
 #if defined(CPUARM)
 bool doMixerCalculations()
@@ -4365,6 +4370,12 @@ inline void opentxInit(OPENTX_INIT_ARGS)
 
   wdt_enable(WDTO_500MS);
 }
+#if defined(DDC_TARGET)
+#if defined (DDC_MIXER_TEST)
+extern "C" void start_profile_test();
+extern "C" void end_profile_test();
+#endif
+#endif
 
 #if defined(CPUARM)
 void mixerTask(void * pdata)
@@ -4377,14 +4388,35 @@ void mixerTask(void * pdata)
       uint16_t t0 = getTmr2MHz();
 
       CoEnterMutexSection(mixerMutex);
+#if defined(DDC_TARGET)
+#if defined (DDC_MIXER_TEST)
+      if ( done_test == 10 )
+      {
+          start_profile_test();
+          //end_profile_test();
+          //done_test = 1;
+      }
+#endif
+#endif
       bool tick10ms = doMixerCalculations();
+#if defined(DDC_TARGET)
+#if defined (DDC_MIXER_TEST)
+      if ( done_test == 10 )
+      {
+          end_profile_test();
+          done_test = 11;
+      }
+      else if ( done_test < 10 )
+        done_test++;
+#endif
+#endif
       CoLeaveMutexSection(mixerMutex);
       if (tick10ms) 
       {
         checkTrims();
 #if defined(DDC_TARGET)
-        // temp debug run the DDC at 100Hz
-        // TODO: find a way to run the DDC where we can be more certain about the run frequency
+        // temp debug run the DDC at roughly 100Hz
+        // TODO: find a way to run the DDC so we can be more certain about the scan frequency
         ddc_task();
 #endif        
       }
