@@ -3155,8 +3155,8 @@ void perOut(uint8_t mode, uint8_t tick10ms)
 
 int32_t sum_chans512[NUM_CHNOUT] = {0};
 #if defined(DDC_TARGET)
+//#define DDC_MIXER_TEST
 #if defined (DDC_MIXER_TEST)
-static int done_test = 0;
 #endif
 #endif
 
@@ -4390,24 +4390,14 @@ void mixerTask(void * pdata)
       CoEnterMutexSection(mixerMutex);
 #if defined(DDC_TARGET)
 #if defined (DDC_MIXER_TEST)
-      if ( done_test == 10 )
-      {
-          start_profile_test();
-          //end_profile_test();
-          //done_test = 1;
-      }
+      start_profile_test();
 #endif
 #endif
       bool tick10ms = doMixerCalculations();
+
 #if defined(DDC_TARGET)
 #if defined (DDC_MIXER_TEST)
-      if ( done_test == 10 )
-      {
-          end_profile_test();
-          done_test = 11;
-      }
-      else if ( done_test < 10 )
-        done_test++;
+        end_profile_test();
 #endif
 #endif
       CoLeaveMutexSection(mixerMutex);
