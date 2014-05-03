@@ -991,6 +991,8 @@ PACK(typedef struct t_PhaseData {
 }) PhaseData;
 #endif
 
+#define NB_DDC_ANA  10
+
 enum SwitchSources {
   SWSRC_NONE = 0,
 
@@ -1167,14 +1169,27 @@ enum MixSources {
   MIXSRC_CH16,
   MIXSRC_LAST_CH = MIXSRC_CH1+NUM_CHNOUT-1,
 
+  MIXSRC_FIRST_DDC_ANA,
+  MIXSRC_LAST_DDC_ANA = MIXSRC_FIRST_DDC_ANA + NB_DDC_ANA - 1,
+
+  /* 
+    Nothing below here is able to be used as a mixer source.
+    Check out the definition of MIXSRC_LAST just below.
+  */
+
   MIXSRC_GVAR1,
   MIXSRC_LAST_GVAR = MIXSRC_GVAR1+MAX_GVARS-1,
 
   MIXSRC_FIRST_TELEM,
-  MIXSRC_LAST_TELEM = MIXSRC_FIRST_TELEM+NUM_TELEMETRY-1
+  MIXSRC_LAST_TELEM = MIXSRC_FIRST_TELEM+NUM_TELEMETRY-1,
+
 };
 
+#if !defined(DDC_TARGET)
 #define MIXSRC_LAST MIXSRC_LAST_CH
+#else
+#define MIXSRC_LAST MIXSRC_LAST_DDC_ANA
+#endif
 
 #define MIN_POINTS 3
 #define MAX_POINTS 17

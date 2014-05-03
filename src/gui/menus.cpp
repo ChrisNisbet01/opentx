@@ -1127,6 +1127,11 @@ bool isSourceAvailable(int16_t source)
     return (cs->func != CS_OFF);
   }
 
+#if !defined(DDC_TARGET)
+  if (source>=MIXSRC_FIRST_DDC_ANA && source<=MIXSRC_LAST_DDC_ANA
+    return false;
+#endif
+
 #if !defined(GVARS)
   if (source>=MIXSRC_GVAR1 && source<=MIXSRC_LAST_GVAR)
     return false;

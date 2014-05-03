@@ -548,7 +548,10 @@ int16_t intpol(int16_t x, uint8_t idx) // -100, -75, -50, -25, 0 ,25 ,50, 75, 10
 #if defined(CURVES)
 int16_t applyCurve(int16_t x, int8_t idx)
 {
-  /* already tried to have only one return at the end */
+  /* 
+    already tried to have only one return at the end
+    CN - but what?
+  */
   switch(idx) {
     case CURVE_NONE:
       return x;
@@ -914,6 +917,9 @@ getvalue_t getValue(uint8_t i)
 #endif
   else if (i<MIXSRC_LAST_PPM) { int16_t x = g_ppmIns[i+1-MIXSRC_PPM1]; if (i<MIXSRC_PPM1+NUM_CAL_PPM-1) { x-= g_eeGeneral.trainer.calib[i+1-MIXSRC_PPM1]; } return x*2; }
   else if (i<MIXSRC_LAST_CH) return ex_chans[i+1-MIXSRC_CH1];
+#if defined(DDC_TARGET)
+  else if (i<MIXSRC_LAST_DDC_ANA) return GetDDCLogicalAnalogInputValue( i+1-MIXSRC_FIRST_DDC_ANA );
+#endif
 #if defined(GVARS)
   else if (i<MIXSRC_LAST_GVAR) return GVAR_VALUE(i+1-MIXSRC_GVAR1, getGVarFlightPhase(s_perout_flight_phase, i+1-MIXSRC_GVAR1));
 #endif
@@ -1057,6 +1063,11 @@ bool getSwitch(int8_t swtch)
           else if (cs->v1 >= MIXSRC_GVAR1) {
             y = cs->v2;
           }
+#if defined(DDC_TARGET)
+          else if (cs->v1 >= MIXSRC_FIRST_DDC_ANA) {
+            y = cs->v2;
+          }
+#endif
           else {
             y = calc100toRESX(cs->v2);
           }
@@ -1067,6 +1078,11 @@ bool getSwitch(int8_t swtch)
           else if (cs->v1 >= MIXSRC_GVAR1) {
             y = cs->v2; // it's a GVAR
           }
+#if defined(DDC_TARGET)
+          else if (cs->v1 >= MIXSRC_FIRST_DDC_ANA) {
+            y = cs->v2; // it's a DDC variable
+          }
+#endif
           else {
             y = calc100toRESX(cs->v2);
           }
@@ -1079,7 +1095,12 @@ bool getSwitch(int8_t swtch)
                 result = (x==y);
               else
 #endif
-              result = (abs(x-y) < (1024 / STICK_TOLERANCE));
+#if defined(DDC_TARGET)
+              if ( cs->v1 >= MIXSRC_FIRST_DDC_ANA && cs->v1 <= MIXSRC_LAST_DDC_ANA )
+                result = (x == y);
+              else
+#endif
+                result = (abs(x-y) < (1024 / STICK_TOLERANCE));
               break;
             case CS_VPOS:
               result = (x>y);
@@ -2472,7 +2493,11 @@ PLAY_FUNCTION(playValue, uint8_t idx)
     default:
     {
       uint8_t unit = 1;
+#if defined(DDC_TARGET)
+      if (idx < MIXSRC_FIRST_DDC_ANA-1)
+#else
       if (idx < MIXSRC_GVAR1-1)
+#endif
         val = calcRESXto100(val);
       if (idx >= MIXSRC_FIRST_TELEM-1+TELEM_ALT-1 && idx <= MIXSRC_FIRST_TELEM-1+TELEM_GPSALT-1)
         unit = idx - (MIXSRC_FIRST_TELEM-1+TELEM_ALT-1);

@@ -866,6 +866,10 @@ void putsMixerSource(xcoord_t x, uint8_t y, uint8_t idx, LcdFlags att)
     }
 #endif
   }
+#if defined(DDC_TARGET)
+  else if (idx <= MIXSRC_LAST_DDC_ANA)
+    putsStrIdx(x, y, STR_DDC, idx-MIXSRC_FIRST_DDC_ANA, att);
+#endif
 #if defined(GVARS) || !defined(PCBSTD)
   else if (idx <= MIXSRC_LAST_GVAR)
     putsStrIdx(x, y, STR_GV, idx-MIXSRC_GVAR1+1, att);
