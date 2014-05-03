@@ -36,6 +36,17 @@
 
 #include "../opentx.h"
 
+static void initTIM12 ( int frequency )
+{
+  // Timer 12
+  RCC->APB1ENR |= RCC_APB1ENR_TIM12EN;           // Enable clock
+  TIM12->PSC = (PERI1_FREQUENCY / frequency) * TIMER_MULT_APB1 - 1;      // 1uS 
+  TIM12->CCER = 0;
+  TIM12->CCMR1 = 0;
+  TIM12->CR1 = 0x01;
+  TIM12->DIER = 0;
+}
+
 void delaysInit(void)
 {
   // Timer13
@@ -46,13 +57,7 @@ void delaysInit(void)
   TIM13->CR1 = 0x02;
   TIM13->DIER = 0;
 
-  // Timer 12
-  RCC->APB1ENR |= RCC_APB1ENR_TIM12EN;           // Enable clock
-  TIM12->PSC = (PERI1_FREQUENCY / 1000000) * TIMER_MULT_APB1 - 1;      // 1uS 
-  TIM12->CCER = 0;
-  TIM12->CCMR1 = 0;
-  TIM12->CR1 = 0x01;
-  TIM12->DIER = 0;
+	initTIM12( 1000000 );
 }
 
 void start_tim12( void )

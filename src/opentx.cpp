@@ -3181,8 +3181,6 @@ void perOut(uint8_t mode, uint8_t tick10ms)
 int32_t sum_chans512[NUM_CHNOUT] = {0};
 #if defined(DDC_TARGET)
 //#define DDC_MIXER_TEST
-#if defined (DDC_MIXER_TEST)
-#endif
 #endif
 
 #if defined(CPUARM)
@@ -4413,18 +4411,8 @@ void mixerTask(void * pdata)
       uint16_t t0 = getTmr2MHz();
 
       CoEnterMutexSection(mixerMutex);
-#if defined(DDC_TARGET)
-#if defined (DDC_MIXER_TEST)
-      start_profile_test();
-#endif
-#endif
       bool tick10ms = doMixerCalculations();
 
-#if defined(DDC_TARGET)
-#if defined (DDC_MIXER_TEST)
-        end_profile_test();
-#endif
-#endif
       CoLeaveMutexSection(mixerMutex);
       if (tick10ms) 
       {
@@ -4432,7 +4420,17 @@ void mixerTask(void * pdata)
 #if defined(DDC_TARGET)
         // temp debug run the DDC at roughly 100Hz
         // TODO: find a way to run the DDC so we can be more certain about the scan frequency
+#if defined(DDC_TARGET)
+#if defined (DDC_MIXER_TEST)
+      start_profile_test();
+#endif
+#endif
         ddc_task();
+#if defined(DDC_TARGET)
+#if defined (DDC_MIXER_TEST)
+        end_profile_test();
+#endif
+#endif
 #endif        
       }
 
