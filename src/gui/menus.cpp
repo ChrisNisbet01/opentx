@@ -1128,7 +1128,7 @@ bool isSourceAvailable(int16_t source)
   }
 
 #if !defined(DDC_TARGET)
-  if (source>=MIXSRC_FIRST_DDC_ANA && source<=MIXSRC_LAST_DDC_ANA
+  if (source>=MIXSRC_FIRST_DDC_ANA && source<=MIXSRC_LAST_DDC_ANA)
     return false;
 #endif
 

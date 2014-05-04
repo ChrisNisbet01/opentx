@@ -674,7 +674,7 @@ ifeq ($(PCB), TARANIS)
     DDCOBJS += ddc/src/branch.c ddc/src/const.c ddc/src/lai.c ddc/src/opentx_switch.c ddc/src/read_value.c
     DDCOBJS += ddc/src/multiply.c ddc/src/divide.c ddc/src/string_object.c ddc/src/system_io.c ddc/src/equals.c ddc/src/limit.c
     DDCOBJS += ddc/src/exit_object.c ddc/src/popup_object.c ddc/src/min_max.c ddc/src/rate_limit.c ddc/src/gcd.c ddc/src/counter.c
-    DDCOBJS += ddc/src/expo.c ddc/src/shift.c
+    DDCOBJS += ddc/src/expo.c ddc/src/shift.c ddc/src/itoa.c ddc/src/ddc_itoa.c
 	SRC += $(DDCOBJS)
   endif
 endif
@@ -1006,6 +1006,7 @@ CPPFLAGS += $(CPPDEFS)
 CPPFLAGS += -Wall
 CPPFLAGS += -fno-exceptions
 CPPFLAGS += -Wno-strict-aliasing
+CPPFLAGS += -fdata-sections -ffunction-sections
 EXTRAINCDIRS += fonts/std
 CPPFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
@@ -1284,7 +1285,8 @@ OBJS =  $(TMP:.s=.o)
 	@echo
 	@echo $(MSG_COMPILING) $@
 	$(CC) $(ARMCPPFLAGS) $< -o allsrc.o
-	$(CC) $(OBJS) allsrc.o -mcpu=cortex-m3 -mthumb -nostartfiles -lm -T$(LDSCRIPT) -Wl,-Map=$(TARGET).map,--cref,--no-warn-mismatch -o $@
+	$(CC) $(OBJS) allsrc.o -mcpu=cortex-m3 -mthumb -nostartfiles -lm -T$(LDSCRIPT) -Wl,-Map=$(TARGET).map,--cref,--no-warn-mismatch,--gc-sections -o $@
+#	$(CC) $(OBJS) allsrc.o -mcpu=cortex-m3 -mthumb -nostartfiles -lm -T$(LDSCRIPT) -Wl,-Map=$(TARGET).map,--cref,--no-warn-mismatch -o $@
 endif
 
 # Target: clean project.
