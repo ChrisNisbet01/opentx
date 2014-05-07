@@ -91,6 +91,7 @@ void menuStatisticsView(uint8_t event)
 
 void menuStatisticsDebug(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   TITLE(STR_MENUDEBUG);
 
   switch(event)
@@ -177,8 +178,8 @@ void menuStatisticsDebug(uint8_t event)
   lcd_outdezAtt(13*FW, 6*FH, stack_free(0), UNSIGN);
   lcd_putc(13*FW, 6*FH, '/');
   lcd_outdezAtt(13*FW+FWNUM, 6*FH, stack_free(1), UNSIGN|LEFT);
-  lcd_putc(lcdLastPos, 6*FH, '/');
-  lcd_outdezAtt(lcdLastPos+FWNUM, 6*FH, stack_free(2), UNSIGN|LEFT);
+  lcd_putc(pLcd->lcdLastPos, 6*FH, '/');
+  lcd_outdezAtt(pLcd->lcdLastPos+FWNUM, 6*FH, stack_free(2), UNSIGN|LEFT);
 #else
   lcd_putsLeft(1*FH, STR_TMR1LATMAXUS);
   lcd_outdez8(MENU_DEBUG_COL_OFS , 1*FH, g_tmr1Latency_max/2 );

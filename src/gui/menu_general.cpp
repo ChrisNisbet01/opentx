@@ -194,6 +194,7 @@ enum menuGeneralSetupItems {
 
 void menuGeneralSetup(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
 #if defined(RTCLOCK)
   struct gtm t;
   gettime(&t);
@@ -460,7 +461,7 @@ void menuGeneralSetup(uint8_t event)
       case ITEM_SETUP_INACTIVITY_ALARM:
         lcd_putsLeft( y,STR_INACTIVITYALARM);
         lcd_outdezAtt(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.inactivityTimer, attr|LEFT);
-        lcd_putc(lcdLastPos, y, 'm');
+        lcd_putc(pLcd->lcdLastPos, y, 'm');
         if(attr) g_eeGeneral.inactivityTimer = checkIncDec(event, g_eeGeneral.inactivityTimer, 0, 250, EE_GENERAL); //0..250minutes
         break;
 
@@ -488,7 +489,7 @@ void menuGeneralSetup(uint8_t event)
       case ITEM_SETUP_BACKLIGHT_DELAY:
         lcd_putsLeft(y, STR_BLDELAY);
         lcd_outdezAtt(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.lightAutoOff*5, attr|LEFT);
-        lcd_putc(lcdLastPos, y, 's');
+        lcd_putc(pLcd->lcdLastPos, y, 's');
         if (attr) CHECK_INCDEC_GENVAR(event, g_eeGeneral.lightAutoOff, 0, 600/5);
         break;
 
@@ -631,6 +632,7 @@ void menuGeneralSetup(uint8_t event)
 #if defined(SDCARD)
 void menuGeneralSdManagerInfo(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   SIMPLE_SUBMENU(STR_SD_INFO_TITLE, 1);
 
   lcd_putsLeft(2*FH, STR_SD_TYPE);
@@ -638,15 +640,15 @@ void menuGeneralSdManagerInfo(uint8_t event)
 
   lcd_putsLeft(3*FH, STR_SD_SIZE);
   lcd_outdezAtt(10*FW, 3*FH, SD_GET_SIZE_MB(), LEFT);
-  lcd_putc(lcdLastPos, 3*FH, 'M');
+  lcd_putc(pLcd->lcdLastPos, 3*FH, 'M');
 
   lcd_putsLeft(4*FH, STR_SD_SECTORS);
   lcd_outdezAtt(10*FW, 4*FH, SD_GET_BLOCKNR()/1000, LEFT);
-  lcd_putc(lcdLastPos, 4*FH, 'k');
+  lcd_putc(pLcd->lcdLastPos, 4*FH, 'k');
 
   lcd_putsLeft(5*FH, STR_SD_SPEED);
   lcd_outdezAtt(10*FW, 5*FH, SD_GET_SPEED()/1000, LEFT);
-  lcd_puts(lcdLastPos, 5*FH, "kb/s");
+  lcd_puts(pLcd->lcdLastPos, 5*FH, "kb/s");
 }
 
 inline bool isFilenameGreater(bool isfile, const char * fn, const char * line)
@@ -722,6 +724,7 @@ void menuGeneralSdManager(uint8_t event)
 #else
   char lfn[SD_SCREEN_FILE_LENGTH];
 #endif
+	lcd_info_st *pLcd = getLcdInfo();
 
 #if defined(SDCARD)
   if (s_warning_result) {
@@ -911,7 +914,7 @@ void menuGeneralSdManager(uint8_t event)
     if (reusableBuffer.sdmanager.lines[i][0]) {
       if (!reusableBuffer.sdmanager.lines[i][SD_SCREEN_FILE_LENGTH+1]) { lcd_putcAtt(0, y, '[', attr); x += FW; }
       lcd_putsAtt(x, y, reusableBuffer.sdmanager.lines[i], attr);
-      if (!reusableBuffer.sdmanager.lines[i][SD_SCREEN_FILE_LENGTH+1]) { lcd_putcAtt(lcdLastPos, y, ']', attr); }
+      if (!reusableBuffer.sdmanager.lines[i][SD_SCREEN_FILE_LENGTH+1]) { lcd_putcAtt(pLcd->lcdLastPos, y, ']', attr); }
     }
   }
 

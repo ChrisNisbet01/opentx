@@ -109,27 +109,28 @@ void displayGpsTime()
 
 void displayGpsCoord(uint8_t y, char direction, int16_t bp, int16_t ap)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   if (frskyData.hub.gpsFix >= 0) {
     if (!direction) direction = '-';
     lcd_outdezAtt(TELEM_2ND_COLUMN, y, bp / 100, LEFT); // ddd before '.'
-    lcd_putc(lcdLastPos, y, '@');
+    lcd_putc(pLcd->lcdLastPos, y, '@');
     uint8_t mn = bp % 100;
     if (g_eeGeneral.gpsFormat == 0) {
-      lcd_putc(lcdLastPos+FWNUM, y, direction);
-      lcd_outdezNAtt(lcdLastPos+FW+FW+1, y, mn, LEFT|LEADING0, 2); // mm before '.'
-      lcd_vline(lcdLastPos, y, 2);
+      lcd_putc(pLcd->lcdLastPos+FWNUM, y, direction);
+      lcd_outdezNAtt(pLcd->lcdLastPos+FW+FW+1, y, mn, LEFT|LEADING0, 2); // mm before '.'
+      lcd_vline(pLcd->lcdLastPos, y, 2);
       uint16_t ss = ap * 6;
-      lcd_outdezAtt(lcdLastPos+3, y, ss / 1000, LEFT); // ''
-      lcd_plot(lcdLastPos, y+FH-2, 0); // small decimal point
-      lcd_outdezAtt(lcdLastPos+2, y, ss % 1000, LEFT); // ''
-      lcd_vline(lcdLastPos, y, 2);
-      lcd_vline(lcdLastPos+2, y, 2);
+      lcd_outdezAtt(pLcd->lcdLastPos+3, y, ss / 1000, LEFT); // ''
+      lcd_plot(pLcd->lcdLastPos, y+FH-2, 0); // small decimal point
+      lcd_outdezAtt(pLcd->lcdLastPos+2, y, ss % 1000, LEFT); // ''
+      lcd_vline(pLcd->lcdLastPos, y, 2);
+      lcd_vline(pLcd->lcdLastPos+2, y, 2);
     }
     else {
-      lcd_outdezNAtt(lcdLastPos+FW, y, mn, LEFT|LEADING0, 2); // mm before '.'
-      lcd_plot(lcdLastPos, y+FH-2, 0); // small decimal point
-      lcd_outdezNAtt(lcdLastPos+2, y, ap, LEFT|UNSIGN|LEADING0, 4); // after '.'
-      lcd_putc(lcdLastPos+1, y, direction);
+      lcd_outdezNAtt(pLcd->lcdLastPos+FW, y, mn, LEFT|LEADING0, 2); // mm before '.'
+      lcd_plot(pLcd->lcdLastPos, y+FH-2, 0); // small decimal point
+      lcd_outdezNAtt(pLcd->lcdLastPos+2, y, ap, LEFT|UNSIGN|LEADING0, 4); // after '.'
+      lcd_putc(pLcd->lcdLastPos+1, y, direction);
     }
   }
   else {

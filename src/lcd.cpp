@@ -36,13 +36,46 @@
 
 #include "opentx.h"
 
-uint8_t displayBuf[DISPLAY_BUF_SIZE];
-#define DISPLAY_END (displayBuf+DISPLAY_PLAN_SIZE)
-#define ASSERT_IN_DISPLAY(p) assert((p) >= displayBuf && (p) < DISPLAY_END)
+#define DISPLAY_END (pLcd->displayBuf+DISPLAY_PLAN_SIZE)
+#define ASSERT_IN_DISPLAY(p) assert((p) >= pLcd->displayBuf && (p) < DISPLAY_END)
+
+/* 
+	The DDC task runs in the mixer task's context. To enable DDC to write to the LCD without
+	interrupting the menu task part way through writing/refreshing, we use separate display buffers
+	for menu and mixer tasks. If the mixer task has the display locked, lcdRefresh() will use the mixer task's
+	display buffer, otherwise use the menu task display buffer as usual.
+	Note that menu buttons do not function as usual when a DDC popup is displayed.
+	Note the LcdRefresh() is still only called by the menu task, not the mixer task.
+*/
+static lcd_info_st lcdInfo[2];
+
+lcd_info_st *getLcdInfo( void )
+{
+	if ( CoGetCurTaskID() == mixerTaskId )
+		return &lcdInfo[1];
+
+	return &lcdInfo[0];
+}
+
+lcd_info_st *getLcdRefreshInfo( void )
+{
+	/* 
+		Called by the menu task when refreshing the LCD.
+		At this point we need the mixer task's displayBuf if the LCD is locked,
+		else return the normal menu task displayBuf.
+	*/
+	if ( is_lcd_locked() != 0 )
+		return &lcdInfo[1];
+
+	return &lcdInfo[0];
+}
 
 void lcd_clear()
 {
-  memset(displayBuf, 0, sizeof(displayBuf));
+	lcd_info_st *pLcd = getLcdInfo();
+
+	memset(pLcd->displayBuf, 0, sizeof(pLcd->displayBuf));
+
 }
 
 void lcd_img(xcoord_t x, uint8_t y, const pm_uchar * img, uint8_t idx, LcdFlags att)
@@ -57,8 +90,11 @@ void lcd_img(xcoord_t x, uint8_t y, const pm_uchar * img, uint8_t idx, LcdFlags 
   uint8_t hb   = (pgm_read_byte(q++)+7)/8;
   bool    inv  = (att & INVERS) ? true : (att & BLINK ? BLINK_ON_PHASE : false);
   q += idx*w*hb;
+
+	lcd_info_st *pLcd = getLcdInfo();
+
   for (uint8_t yb = 0; yb < hb; yb++) {
-    uint8_t *p = &displayBuf[ (y / 8 + yb) * LCD_W + x ];
+    uint8_t *p = &pLcd->displayBuf[ (y / 8 + yb) * LCD_W + x ];
     for (xcoord_t i=0; i<w; i++){
       uint8_t b = pgm_read_byte(q++);
       ASSERT_IN_DISPLAY(p);
@@ -80,11 +116,10 @@ void lcd_img(xcoord_t x, uint8_t y, const pm_uchar * img, uint8_t idx, LcdFlags 
   }
 }
 
-uint8_t lcdLastPos;
-
 void lcd_putcAtt(xcoord_t x, uint8_t y, const unsigned char c, LcdFlags flags)
 {
-  uint8_t *p = &displayBuf[ y / 8 * LCD_W + x ];
+	lcd_info_st *pLcd = getLcdInfo();
+  uint8_t *p = &pLcd->displayBuf[ y / 8 * LCD_W + x ];
 
 #if defined(CPUARM)
   const pm_uchar *q = (c < 0xC0) ? &font_5x7[(c-0x20)*5+4] : &font_5x7_extra[(c-0xC0)*5+4];
@@ -325,10 +360,11 @@ void lcd_putsnAtt(xcoord_t x, uint8_t y, const pm_char * s, uint8_t len, LcdFlag
     s++;
     len--;
   }
-  lcdLastPos = x;
+	lcd_info_st *pLcd = getLcdInfo();
+  pLcd->lcdLastPos = x;
 #if defined(CPUARM)
   if (mode&MIDSIZE)
-    lcdLastPos += 1;
+    pLcd->lcdLastPos += 1;
 #endif
 }
 
@@ -434,7 +470,8 @@ void lcd_outdezNAtt(xcoord_t x, uint8_t y, lcdint_t val, LcdFlags flags, uint8_t
       x += ((dblsize|midsize) ? 7 : FWNUM);
   }
 
-  lcdLastPos = x;
+	lcd_info_st *pLcd = getLcdInfo();
+  pLcd->lcdLastPos = x;
   x -= fw + 1;
 
   for (uint8_t i=1; i<=len; i++) {
@@ -570,7 +607,8 @@ void lcd_mask(uint8_t *p, uint8_t mask, LcdFlags att)
 
 void lcd_plot(xcoord_t x, uint8_t y, LcdFlags att)
 {
-  uint8_t *p = &displayBuf[ y / 8 * LCD_W + x ];
+	lcd_info_st *pLcd = getLcdInfo();
+  uint8_t *p = &pLcd->displayBuf[ y / 8 * LCD_W + x ];
   if (p<DISPLAY_END)
     lcd_mask(p, BITMASK(y%8), att);
 }
@@ -580,7 +618,8 @@ void lcd_hlineStip(xcoord_t x, uint8_t y, xcoord_t w, uint8_t pat, LcdFlags att)
   if (y >= LCD_H) return;
   if (x+w > LCD_W) { w = LCD_W - x; }
 
-  uint8_t *p  = &displayBuf[ y / 8 * LCD_W + x ];
+	lcd_info_st *pLcd = getLcdInfo();
+  uint8_t *p  = &pLcd->displayBuf[ y / 8 * LCD_W + x ];
   uint8_t msk = BITMASK(y%8);
   while(w) {
     if(pat&1) {
@@ -611,7 +650,8 @@ void lcd_vlineStip(xcoord_t x, int8_t y, int8_t h, uint8_t pat)
   if (pat==DOTTED && !(y%2))
     pat = ~pat;
 
-  uint8_t *p  = &displayBuf[ y / 8 * LCD_W + x ];
+	lcd_info_st *pLcd = getLcdInfo();
+  uint8_t *p  = &pLcd->displayBuf[ y / 8 * LCD_W + x ];
   y = (y & 0x07);
   if (y) {
     ASSERT_IN_DISPLAY(p);
@@ -644,7 +684,8 @@ void lcd_vlineStip(xcoord_t x, int8_t y, int8_t h, uint8_t pat, LcdFlags att)
   if (pat==DOTTED && !(y%2))
     pat = ~pat;
 
-  uint8_t *p  = &displayBuf[ y / 8 * LCD_W + x ];
+	lcd_info_st *pLcd = getLcdInfo();
+  uint8_t *p  = &pLcd->displayBuf[ y / 8 * LCD_W + x ];
   y = (y & 0x07);
   if (y) {
     ASSERT_IN_DISPLAY(p);
@@ -702,7 +743,8 @@ void lcd_filled_rect(xcoord_t x, int8_t y, xcoord_t w, uint8_t h, uint8_t pat, L
 
 void lcd_invert_line(int8_t y)
 {
-  uint8_t *p  = &displayBuf[y * LCD_W];
+	lcd_info_st *pLcd = getLcdInfo();
+  uint8_t *p  = &pLcd->displayBuf[y * LCD_W];
   for (xcoord_t x=0; x<LCD_W; x++) {
     ASSERT_IN_DISPLAY(p);
 #if defined(PCBTARANIS)
@@ -814,7 +856,11 @@ void putsTime(xcoord_t x, uint8_t y, putstime_t tme, LcdFlags att, LcdFlags att2
 void putsVolts(xcoord_t x, uint8_t y, uint16_t volts, LcdFlags att)
 {
   lcd_outdezAtt(x, y, (int16_t)volts, (~NO_UNIT) & (att | ((att&PREC2)==PREC2 ? 0 : PREC1)));
-  if (~att & NO_UNIT) lcd_putcAtt(lcdLastPos, y, 'v', att);
+  if (~att & NO_UNIT) 
+  {
+	lcd_info_st *pLcd = getLcdInfo();
+  	lcd_putcAtt(pLcd->lcdLastPos, y, 'v', att);
+  }
 }
 
 void putsVBat(xcoord_t x, uint8_t y, LcdFlags att)
@@ -825,20 +871,21 @@ void putsVBat(xcoord_t x, uint8_t y, LcdFlags att)
 void putsStrIdx(xcoord_t x, uint8_t y, const pm_char *str, uint8_t idx, LcdFlags att)
 {
   lcd_putsAtt(x, y, str, att);
+	lcd_info_st *pLcd = getLcdInfo();
 
   if (att & SMLSIZE)
-    lcd_outdezNAtt(lcdLastPos+1, y, idx, att|LEFT, 2);
+    lcd_outdezNAtt(pLcd->lcdLastPos+1, y, idx, att|LEFT, 2);
   else
-    lcd_outdezNAtt(lcdLastPos, y, idx, att|LEFT, 2);
+    lcd_outdezNAtt(pLcd->lcdLastPos, y, idx, att|LEFT, 2);
 
 #if defined(CPUARM)
-  uint8_t lastPos = lcdLastPos;
+  uint8_t lastPos = pLcd->lcdLastPos;
 #endif
 
   lcd_putsAtt(x, y, str, att);
 
 #if defined(CPUARM)
-  lcdLastPos = lastPos;
+  pLcd->lcdLastPos = lastPos;
 #endif
 }
 
@@ -861,8 +908,9 @@ void putsMixerSource(xcoord_t x, uint8_t y, uint8_t idx, LcdFlags att)
     putsStrIdx(x, y, STR_CH, idx-MIXSRC_CH1+1, att);
 #if defined(PCBTARANIS)
     if (ZEXIST(g_model.limitData[idx-MIXSRC_CH1].name) && (att & STREXPANDED)) {
-      lcd_putcAtt(lcdLastPos, y, ' ', att);
-      lcd_putsnAtt(lcdLastPos+3, y, g_model.limitData[idx-MIXSRC_CH1].name, LEN_CHANNEL_NAME, ZCHAR|att);
+	lcd_info_st *pLcd = getLcdInfo();
+      lcd_putcAtt(pLcd->lcdLastPos, y, ' ', att);
+      lcd_putsnAtt(pLcd->lcdLastPos+3, y, g_model.limitData[idx-MIXSRC_CH1].name, LEN_CHANNEL_NAME, ZCHAR|att);
     }
 #endif
   }
@@ -1028,7 +1076,10 @@ void putsTelemetryValue(xcoord_t x, uint8_t y, lcdint_t val, uint8_t unit, uint8
   convertUnit(val, unit);
   lcd_outdezAtt(x, y, val, att & (~NO_UNIT));
   if (!(att & NO_UNIT) && unit != UNIT_RAW)
-    lcd_putsiAtt(lcdLastPos/*+1*/, y, STR_VTELEMUNIT, unit, 0);
+  {
+	lcd_info_st *pLcd = getLcdInfo();
+    lcd_putsiAtt(pLcd->lcdLastPos/*+1*/, y, STR_VTELEMUNIT, unit, 0);
+  }
 }
 
 const pm_uint8_t bchunit_ar[] PROGMEM = {
@@ -1162,7 +1213,10 @@ void putsTelemetryChannel(xcoord_t x, uint8_t y, uint8_t channel, lcdint_t val, 
     case TELEM_TX_VOLTAGE-1:
       lcd_outdezAtt(x, y, val, (att|PREC1) & (~NO_UNIT));
       if (!(att & NO_UNIT))
-        lcd_putc(lcdLastPos/*+1*/, y, 'v');
+      {
+		lcd_info_st *pLcd = getLcdInfo();
+        lcd_putc(pLcd->lcdLastPos/*+1*/, y, 'v');
+      }
       break;
   }
 }

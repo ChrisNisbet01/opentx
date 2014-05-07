@@ -223,8 +223,11 @@ void lcd_bmp(xcoord_t x, uint8_t y, const pm_uchar * img, uint8_t offset, uint8_
   if (!width) width = w;
   uint8_t hb   = (pgm_read_byte(q++)+7)/8;
   q += 4*offset;
+
+	lcd_info_st *pLcd = getLcdInfo();
+
   for (uint8_t yb = 0; yb < hb; yb++) {
-    uint8_t *p = &displayBuf[ (y / 8 + yb) * LCD_W + x ];
+    uint8_t *p = &pLcd->displayBuf[ (y / 8 + yb) * LCD_W + x ];
     for (xcoord_t i=0; i<width; i++) {
       for (uint8_t plan=0; plan<4; plan++) {
         uint8_t b = pgm_read_byte(q++);
@@ -239,4 +242,5 @@ void lcd_bmp(xcoord_t x, uint8_t y, const pm_uchar * img, uint8_t offset, uint8_
       p++;
     }
   }
+
 }

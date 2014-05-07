@@ -1071,6 +1071,7 @@ extern "C" {
 #endif
 
 extern OS_MutexID mixerMutex;
+
 inline void pauseMixerCalculations()
 {
   CoEnterMutexSection(mixerMutex);

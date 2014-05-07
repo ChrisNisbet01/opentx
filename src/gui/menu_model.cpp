@@ -930,6 +930,7 @@ void onModelSetupBitmapMenu(const char *result)
 
 void menuModelSetup(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
 #if defined(PCBTARANIS)
   #define IF_PORT1_ON(x)             (g_model.moduleData[0].rfProtocol == RF_PROTO_OFF ? HIDDEN_ROW : (uint8_t)(x))
   #define IF_PORT2_ON(x)             (g_model.externalModule == MODULE_TYPE_NONE ? HIDDEN_ROW : (uint8_t)(x))
@@ -1253,9 +1254,9 @@ void menuModelSetup(uint8_t event)
         lcd_putsLeft(y, STR_CHANNELRANGE);
         if ((int8_t)PORT_CHANNELS_ROWS(moduleIdx) >= 0) {
           lcd_putsAtt(MODEL_SETUP_2ND_COLUMN, y, STR_CH, m_posHorz==0 ? attr : 0);
-          lcd_outdezAtt(lcdLastPos, y, moduleData.channelsStart+1, LEFT | (m_posHorz==0 ? attr : 0));
-          lcd_putc(lcdLastPos, y, '-');
-          lcd_outdezAtt(lcdLastPos + FW+1, y, moduleData.channelsStart+NUM_CHANNELS(moduleIdx), LEFT | (m_posHorz==1 ? attr : 0));
+          lcd_outdezAtt(pLcd->lcdLastPos, y, moduleData.channelsStart+1, LEFT | (m_posHorz==0 ? attr : 0));
+          lcd_putc(pLcd->lcdLastPos, y, '-');
+          lcd_outdezAtt(pLcd->lcdLastPos + FW+1, y, moduleData.channelsStart+NUM_CHANNELS(moduleIdx), LEFT | (m_posHorz==1 ? attr : 0));
           if (attr && (editMode>0 || p1valdiff)) {
             switch (m_posHorz) {
               case 0:
@@ -1418,9 +1419,9 @@ void menuModelSetup(uint8_t event)
 
 #if defined(PCBSKY9X)
         lcd_putsAtt(MODEL_SETUP_2ND_COLUMN+4*FW+3, y, STR_CH, m_posHorz==1 ? attr : 0);
-        lcd_outdezAtt(lcdLastPos, y, g_model.moduleData[0].channelsStart+1, LEFT | (m_posHorz==1 ? attr : 0));
-        lcd_putc(lcdLastPos, y, '-');
-        lcd_outdezAtt(lcdLastPos + FW+1, y, g_model.moduleData[0].channelsStart+NUM_PORT1_CHANNELS(), LEFT | (m_posHorz==2 ? attr : 0));
+        lcd_outdezAtt(pLcd->lcdLastPos, y, g_model.moduleData[0].channelsStart+1, LEFT | (m_posHorz==1 ? attr : 0));
+        lcd_putc(pLcd->lcdLastPos, y, '-');
+        lcd_outdezAtt(pLcd->lcdLastPos + FW+1, y, g_model.moduleData[0].channelsStart+NUM_PORT1_CHANNELS(), LEFT | (m_posHorz==2 ? attr : 0));
 #else
         if (IS_PPM_PROTOCOL(protocol)) {
           lcd_putsiAtt(MODEL_SETUP_2ND_COLUMN+7*FW, y, STR_NCHANNELS, g_model.ppmNCH+2, m_posHorz!=0 ? attr : 0);
@@ -1468,9 +1469,9 @@ void menuModelSetup(uint8_t event)
         lcd_putsLeft(y, PSTR("Port2"));
         lcd_putsiAtt(MODEL_SETUP_2ND_COLUMN, y, STR_VPROTOS, 0, 0);
         lcd_putsAtt(MODEL_SETUP_2ND_COLUMN+4*FW+3, y, STR_CH, m_posHorz<=0 ? attr : 0);
-        lcd_outdezAtt(lcdLastPos, y, g_model.moduleData[1].channelsStart+1, LEFT | (m_posHorz<=0 ? attr : 0));
-        lcd_putc(lcdLastPos, y, '-');
-        lcd_outdezAtt(lcdLastPos + FW+1, y, g_model.moduleData[1].channelsStart+8+g_model.moduleData[1].channelsCount, LEFT | (m_posHorz!=0 ? attr : 0));
+        lcd_outdezAtt(pLcd->lcdLastPos, y, g_model.moduleData[1].channelsStart+1, LEFT | (m_posHorz<=0 ? attr : 0));
+        lcd_putc(pLcd->lcdLastPos, y, '-');
+        lcd_outdezAtt(pLcd->lcdLastPos + FW+1, y, g_model.moduleData[1].channelsStart+8+g_model.moduleData[1].channelsCount, LEFT | (m_posHorz!=0 ? attr : 0));
         if (attr && (editMode>0 || p1valdiff)) {
           switch (m_posHorz) {
             case 0:
@@ -2282,9 +2283,10 @@ const pm_char STR_CURVE_CLEAR[] PROGMEM = "Clear";
 
 void displayPresetChoice(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   displayWarning(event);
   lcd_outdezAtt(WARNING_LINE_X+FW*sizeof(STR_PRESET), WARNING_LINE_Y, 45*s_warning_input_value/4, LEFT|INVERS);
-  lcd_putcAtt(lcdLastPos, WARNING_LINE_Y, '@', INVERS);
+  lcd_putcAtt(pLcd->lcdLastPos, WARNING_LINE_Y, '@', INVERS);
 
   if (s_warning_result) {
     s_warning_result = 0;
@@ -2321,6 +2323,7 @@ void onCurveOneMenu(const char *result)
 
 void menuModelCurveOne(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   static uint8_t pointsOfs = 0;
   CurveInfo crv = curveInfo(s_curveChan);
 
@@ -2336,7 +2339,7 @@ void menuModelCurveOne(uint8_t event)
   uint8_t attr = (m_posVert==1 ? (s_editMode>0 ? INVERS|BLINK : INVERS) : 0);
   lcd_putsLeft(3*FH+3, STR_TYPE);
   lcd_outdezAtt(INDENT_WIDTH, 4*FH+3, crv.points, LEFT|attr);
-  lcd_putsAtt(lcdLastPos, 4*FH+3, crv.custom ? PSTR("pt'") : PSTR("pt"), attr);
+  lcd_putsAtt(pLcd->lcdLastPos, 4*FH+3, crv.custom ? PSTR("pt'") : PSTR("pt"), attr);
   if (attr==(INVERS|BLINK)) {
     switch(event) {
       case EVT_KEY_REPT(KEY_LEFT):
@@ -2440,6 +2443,7 @@ void menuModelCurveOne(uint8_t event)
 #else
 void menuModelCurveOne(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   TITLE(STR_MENUCURVE);
   lcd_outdezAtt(PSIZE(TR_MENUCURVE)*FW+1, 0, s_curveChan+1, INVERS|LEFT);
   DISPLAY_PROGRESS_BAR(20*FW+1);
@@ -2525,7 +2529,7 @@ void menuModelCurveOne(uint8_t event)
   lcd_putsLeft(7*FH, STR_TYPE);
   uint8_t attr = (s_editMode <= 0 ? INVERS : 0);
   lcd_outdezAtt(5*FW-2, 7*FH, crv.points, LEFT|attr);
-  lcd_putsAtt(lcdLastPos, 7*FH, crv.custom ? PSTR("pt'") : PSTR("pt"), attr);
+  lcd_putsAtt(pLcd->lcdLastPos, 7*FH, crv.custom ? PSTR("pt'") : PSTR("pt"), attr);
 
   DrawCurve();
 
@@ -2858,6 +2862,7 @@ void gvarWeightItem(xcoord_t x, uint8_t y, MixData *md, uint8_t attr, uint8_t ev
 
 void menuModelMixOne(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
 #if defined(PCBTARANIS)
   if (event == EVT_KEY_LONG(KEY_MENU)) {
     pushMenu(menuChannelsView);
@@ -2868,7 +2873,7 @@ void menuModelMixOne(uint8_t event)
 
   TITLE(s_currCh ? STR_INSERTMIX : STR_EDITMIX);
   MixData *md2 = mixAddress(s_currIdx) ;
-  putsChn(lcdLastPos+1*FW, 0, md2->destCh+1,0);
+  putsChn(pLcd->lcdLastPos+1*FW, 0, md2->destCh+1,0);
 
 #if defined(ROTARY_ENCODERS)
 #if defined(CURVES)
@@ -3678,6 +3683,7 @@ void menuModelLimits(uint8_t event)
 
 void menuModelCurvesAll(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
 #if defined(GVARS) && defined(PCBSTD)
   SIMPLE_MENU(STR_MENUCURVES, menuTabModel, e_CurvesAll, 1+MAX_CURVES+MAX_GVARS);
 #else
@@ -3724,7 +3730,7 @@ void menuModelCurvesAll(uint8_t event)
       editName(4*FW, y, g_model.curveNames[k], sizeof(g_model.curveNames[k]), 0, 0);
       CurveInfo crv = curveInfo(k);
       lcd_outdezAtt(11*FW, y, crv.points, LEFT);
-      lcd_putsAtt(lcdLastPos, y, crv.custom ? PSTR("pt'") : PSTR("pt"), 0);
+      lcd_putsAtt(pLcd->lcdLastPos, y, crv.custom ? PSTR("pt'") : PSTR("pt"), 0);
 #endif
     }
   }
@@ -4315,6 +4321,7 @@ void onCustomFunctionsMenu(const char *result)
 
 void menuModelCustomFunctions(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   MENU(STR_MENUCUSTOMFUNC, menuTabModel, e_CustomFunctions, NUM_CFN+1, {0, NAVIGATION_LINE_BY_LINE|3/*repeated*/});
 
   uint8_t y;
@@ -4494,7 +4501,7 @@ void menuModelCustomFunctions(uint8_t event)
             else if (CFN_FUNC(sd) == FUNC_LOGS) {
               if (val_displayed) {
                 lcd_outdezAtt(MODEL_CUSTOM_FUNC_3RD_COLUMN, y, val_displayed, attr|PREC1|LEFT);
-                lcd_putc(lcdLastPos, y, 's');
+                lcd_putc(pLcd->lcdLastPos, y, 's');
               }
               else {
                 lcd_putsiAtt(MODEL_CUSTOM_FUNC_3RD_COLUMN, y, STR_MMMINV, 0, attr);
@@ -4694,6 +4701,7 @@ enum menuModelTelemetryItems {
 
 void menuModelTelemetry(uint8_t event)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   MENU(STR_MENUTELEMETRY, menuTabModel, e_Telemetry, ITEM_TELEMETRY_MAX+1, {0, CHANNEL_ROWS CHANNEL_ROWS RSSI_ROWS USRDATA_LINES 0, 0, IF_VARIO((uint8_t)-1) IF_VARIO(0) IF_VARIO(VARIO_RANGE_ROWS) SCREEN_TYPE_ROWS, 2, 2, 2, 2, SCREEN_TYPE_ROWS, 2, 2, 2, 2, IF_CPUARM(SCREEN_TYPE_ROWS) IF_CPUARM(2) IF_CPUARM(2) IF_CPUARM(2) IF_CPUARM(2) });
 
   uint8_t sub = m_posVert - 1;
@@ -4730,7 +4738,7 @@ void menuModelTelemetry(uint8_t event)
       case ITEM_TELEMETRY_A2_RANGE:
         lcd_putsLeft(y, STR_RANGE);
         putsTelemetryChannel(TELEM_COL2, y, dest, 255-channel.offset, (m_posHorz<=0 ? attr : 0)|NO_UNIT|LEFT);
-        lcd_putsiAtt(lcdLastPos, y, STR_VTELEMUNIT, channel.type, m_posHorz!=0 ? attr : 0);
+        lcd_putsiAtt(pLcd->lcdLastPos, y, STR_VTELEMUNIT, channel.type, m_posHorz!=0 ? attr : 0);
         if (attr && (s_editMode>0 || p1valdiff)) {
           if (m_posHorz == 0) {
             uint16_t ratio = checkIncDec(event, channel.ratio, 0, 256, EE_MODEL);

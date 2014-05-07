@@ -83,7 +83,8 @@ Open9xSim::Open9xSim(FXApp* a)
 :FXMainWindow(a,"OpenTXSimu",NULL,NULL,DECOR_ALL,20,90,0,0)
 {
   firstTime=true;
-  for(int i=0; i<(LCD_W*LCD_H/8); i++) displayBuf[i]=0;//rand();
+  lcd_info_st *pLcd = getLcdRefreshInfo();
+  for(int i=0; i<(LCD_W*LCD_H/8); i++) pLcd->displayBuf[i]=0;//rand();
   bmp = new FXPPMImage(getApp(),NULL,IMAGE_OWNED|IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP, W2, H2);
 
   FXHorizontalFrame *hf11=new FXHorizontalFrame(this,LAYOUT_CENTER_X);

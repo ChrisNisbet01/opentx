@@ -323,6 +323,7 @@ uint8_t scrollbar_X = LCD_W-1;
 
 bool check(check_event_t event, uint8_t curr, const MenuFuncP *menuTab, uint8_t menuTabSize, const pm_uint8_t *horTab, uint8_t horTabMax, vertpos_t maxrow)
 {
+	lcd_info_st *pLcd = getLcdInfo();
   vertpos_t l_posVert = m_posVert;
   horzpos_t l_posHorz = m_posHorz;
 
@@ -462,7 +463,7 @@ bool check(check_event_t event, uint8_t curr, const MenuFuncP *menuTab, uint8_t 
 #endif
   }
 
-  DISPLAY_PROGRESS_BAR(menuTab ? lcdLastPos-2*FW-((curr+1)/10*FWNUM)-2 : 20*FW+1);
+  DISPLAY_PROGRESS_BAR(menuTab ? pLcd->lcdLastPos-2*FW-((curr+1)/10*FWNUM)-2 : 20*FW+1);
 
   if (s_editMode<=0) {
     if (scrollUD) {

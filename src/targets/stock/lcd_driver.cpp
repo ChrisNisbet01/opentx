@@ -114,7 +114,8 @@ void lcdSetRefVolt(uint8_t val)
 void lcdRefresh()
 {
   LCD_LOCK();
-  uint8_t *p=displayBuf;
+  lcd_info_st *pLcd = getLcdRefreshInfo();
+  uint8_t *p = pLcd->displayBuf;
   for(uint8_t y=0; y < 8; y++) {
     lcdSendCtl(0x04);
     lcdSendCtl(0x10); //column addr 0

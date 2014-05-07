@@ -140,8 +140,14 @@
 #define DISPLAY_BUF_SIZE   DISPLAY_PLAN_SIZE
 #endif
 
-extern uint8_t displayBuf[DISPLAY_BUF_SIZE];
-extern uint8_t lcdLastPos;
+typedef struct lcd_info_st
+{
+	uint8_t displayBuf[DISPLAY_BUF_SIZE];
+	uint8_t lcdLastPos;
+} lcd_info_st;
+
+lcd_info_st *getLcdInfo( void );
+lcd_info_st *getLcdRefreshInfo( void );
 
 #if defined(PCBSTD) && defined(VOICE)
   extern volatile uint8_t LcdLock ;
