@@ -988,6 +988,11 @@ bool getSwitch(int8_t swtch)
   else if (cs_idx <= MAX_PSWITCH) {
     result = switchState((EnumKeys)(SW_BASE+cs_idx-1));
   }
+#if defined(DDC_TARGET)
+  else if (cs_idx >= SWSRC_FIRST_DDC_SWITCH && cs_idx <= SWSRC_LAST_DDC_SWITCH) {
+    result = GetDDCLogicalDigitalInputValue( cs_idx - SWSRC_FIRST_DDC_SWITCH ) ? true : false;
+  }
+#endif
   else {
     cs_idx -= MAX_PSWITCH+1;
 

@@ -955,7 +955,6 @@ void putsSwitches(xcoord_t x, uint8_t y, int8_t idx, LcdFlags att)
     lcd_vlineStip(x-2, y, 8, 0x5E/*'!'*/);
     idx = -idx;
   }
-
 #if ROTARY_ENCODERS > 0
   else if (idx >= SWSRC_FIRST_ROTENC_SWITCH) {
     idx -= SWSRC_FIRST_ROTENC_SWITCH;
@@ -964,7 +963,6 @@ void putsSwitches(xcoord_t x, uint8_t y, int8_t idx, LcdFlags att)
     return lcd_putsiAtt(x, y, STR_VRENCODERS, idx/2, att);
   }
 #endif
-
 #if !defined(PCBSTD)
   else if (idx >= SWSRC_TRAINER_SHORT) {
     idx -= SWSRC_TRAINER_SHORT;
@@ -1025,7 +1023,11 @@ void putsTmrMode(xcoord_t x, uint8_t y, int8_t mode, LcdFlags att)
     return;
   }
 
-  if (mode >= TMR_VAROFS+MAX_PSWITCH+NUM_CSW) {
+  if (mode >= TMR_VAROFS+MAX_PSWITCH+NUM_CSW
+#if defined(DDC_TARGET)
+	+NB_DDC_DIGITAL
+#endif
+  ) {
     mode++;
   }
 

@@ -671,11 +671,12 @@ ifeq ($(PCB), TARANIS)
     DDCOBJS += ddc/src/or.c ddc/src/and.c ddc/src/xor.c ddc/src/not.c ddc/src/oneshot.c ddc/src/comparator.c ddc/src/beep.c ddc/src/end.c 
     DDCOBJS += ddc/src/add.c ddc/src/subtract.c ddc/src/switch.c ddc/src/transfer.c ddc/src/negate.c ddc/src/dom.c ddc/src/dob.c
     DDCOBJS += ddc/src/flipflop.c ddc/src/transform.c ddc/src/playvalue.c ddc/src/getmixer.c ddc/src/analog_value.c ddc/src/playfile.c
-    DDCOBJS += ddc/src/branch.c ddc/src/const.c ddc/src/lai.c ddc/src/opentx_switch.c ddc/src/read_value.c
+    DDCOBJS += ddc/src/branch.c ddc/src/const.c ddc/src/lai.c ddc/src/ldi.c ddc/src/opentx_switch.c ddc/src/read_value.c
     DDCOBJS += ddc/src/multiply.c ddc/src/divide.c ddc/src/string_object.c ddc/src/system_io.c ddc/src/equals.c ddc/src/limit.c
-    DDCOBJS += ddc/src/exit_object.c ddc/src/popup_object.c ddc/src/min_max.c ddc/src/rate_limit.c ddc/src/gcd.c ddc/src/counter.c
+    DDCOBJS += ddc/src/exit_object.c ddc/src/min_max.c ddc/src/rate_limit.c ddc/src/gcd.c ddc/src/counter.c
     DDCOBJS += ddc/src/expo.c ddc/src/shift.c ddc/src/itoa.c ddc/src/ddc_itoa.c ddc/src/abs.c ddc/src/scale.c ddc/src/circle_object.c ddc/src/sqrroot.c
     DDCOBJS += ddc/src/square_root_object.c ddc/src/sine_object.c ddc/src/sine.c ddc/src/atan2.c ddc/src/atan2_object.c
+    DDCOBJS += ddc/src/lcd_lock.c ddc/src/lcd_clear.c ddc/src/lcd_text.c
 	SRC += $(DDCOBJS)
   endif
 endif

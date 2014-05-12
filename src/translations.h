@@ -148,7 +148,12 @@ extern const pm_char STR_OPEN9X[];
   #define OFS_VKEYS            (OFS_VSWASHTYPE)
 #endif
 #define OFS_VSWITCHES          (OFS_VKEYS + sizeof(TR_VKEYS))
+#if defined(DDC_TARGET)
+#define OFS_DDCSWITCHES			(OFS_VSWITCHES + sizeof(TR_VSWITCHES))
+#define OFS_VSRCRAW				(OFS_DDCSWITCHES + sizeof(TR_DDC_SWITCHES))
+#else
 #define OFS_VSRCRAW            (OFS_VSWITCHES + sizeof(TR_VSWITCHES))
+#endif
 #define OFS_VTMRMODES          (OFS_VSRCRAW + sizeof(TR_VSRCRAW))
 #define OFS_DATETIME           (OFS_VTMRMODES + sizeof(TR_VTMRMODES))
 #if defined(CPUM2560) || defined(CPUARM)
@@ -445,6 +450,7 @@ extern const pm_char STR_MENUCURVES[];
 extern const pm_char STR_MENUCURVE[];
 extern const pm_char STR_MENUCUSTOMSWITCH[];
 extern const pm_char STR_MENUCUSTOMSWITCHES[];
+extern const pm_char STR_MENUCUSTOMSWITCH[];
 extern const pm_char STR_MENUCUSTOMFUNC[];
 extern const pm_char STR_MENUTELEMETRY[];
 extern const pm_char STR_MENUTEMPLATES[];

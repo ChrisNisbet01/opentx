@@ -38,6 +38,9 @@
 #define myeeprom_h
 
 #include <inttypes.h>
+#if defined(DDC_TARGET)
+#include "ddc/include/ddc_config.h"
+#endif
 
 #define WARN_THR_BIT  0x01
 #define WARN_BEP_BIT  0x80
@@ -991,8 +994,6 @@ PACK(typedef struct t_PhaseData {
 }) PhaseData;
 #endif
 
-#define NB_DDC_ANA  10
-
 enum SwitchSources {
   SWSRC_NONE = 0,
 
@@ -1051,6 +1052,11 @@ enum SwitchSources {
   SWSRC_SWB,
   SWSRC_SWC,
   SWSRC_LAST_CSW = SWSRC_SW1+NUM_CSW-1,
+
+#if defined(DDC_TARGET)
+  SWSRC_FIRST_DDC_SWITCH,
+  SWSRC_LAST_DDC_SWITCH = SWSRC_FIRST_DDC_SWITCH + NB_DDC_DIGITAL-1,
+#endif  
 
   SWSRC_ON,
 
