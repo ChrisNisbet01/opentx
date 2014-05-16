@@ -3184,9 +3184,6 @@ void perOut(uint8_t mode, uint8_t tick10ms)
 #define TIME_TO_WRITE() (s_eeDirtyMsk && (tmr10ms_t)(get_tmr10ms() - s_eeDirtyTime10ms) >= (tmr10ms_t)WRITE_DELAY_10MS)
 
 int32_t sum_chans512[NUM_CHNOUT] = {0};
-#if defined(DDC_TARGET)
-//#define DDC_MIXER_TEST
-#endif
 
 #if defined(CPUARM)
 bool doMixerCalculations()
@@ -4398,12 +4395,6 @@ inline void opentxInit(OPENTX_INIT_ARGS)
 
   wdt_enable(WDTO_500MS);
 }
-#if defined(DDC_TARGET)
-#if defined (DDC_MIXER_TEST)
-extern "C" void start_profile_test();
-extern "C" void end_profile_test();
-#endif
-#endif
 
 #if defined(CPUARM)
 void mixerTask(void * pdata)
@@ -4425,17 +4416,7 @@ void mixerTask(void * pdata)
 #if defined(DDC_TARGET)
         // temp debug run the DDC at roughly 100Hz
         // TODO: find a way to run the DDC so we can be more certain about the scan frequency
-#if defined(DDC_TARGET)
-#if defined (DDC_MIXER_TEST)
-      start_profile_test();
-#endif
-#endif
         ddc_task();
-#if defined(DDC_TARGET)
-#if defined (DDC_MIXER_TEST)
-        end_profile_test();
-#endif
-#endif
 #endif        
       }
 
