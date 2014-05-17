@@ -48,13 +48,17 @@
 	Note the LcdRefresh() is still only called by the menu task, not the mixer task.
 */
 static lcd_info_st lcdInfo[2];
+#define MENU_TASK_LCD_INFO_INDEX 0
+#define MIXER_TASK_LCD_INFO_INDEX 1
 
 lcd_info_st *getLcdInfo( void )
 {
+#if !defined(SIMU)
 	if ( CoGetCurTaskID() == mixerTaskId )
-		return &lcdInfo[1];
+		return &lcdInfo[MIXER_TASK_LCD_INFO_INDEX];
+#endif
 
-	return &lcdInfo[0];
+	return &lcdInfo[MENU_TASK_LCD_INFO_INDEX];
 }
 
 lcd_info_st *getLcdRefreshInfo( void )
@@ -65,9 +69,9 @@ lcd_info_st *getLcdRefreshInfo( void )
 		else return the normal menu task displayBuf.
 	*/
 	if ( is_lcd_locked() != 0 )
-		return &lcdInfo[1];
+		return &lcdInfo[MIXER_TASK_LCD_INFO_INDEX];
 
-	return &lcdInfo[0];
+	return &lcdInfo[MENU_TASK_LCD_INFO_INDEX];
 }
 
 void lcd_clear()
@@ -546,6 +550,9 @@ void lcd_outdezNAtt(xcoord_t x, uint8_t y, lcdint_t val, LcdFlags flags, uint8_t
 #if defined(PCBTARANIS)
 void lcd_mask(uint8_t *p, uint8_t mask, LcdFlags att)
 {
+#if defined(SIMU)
+  lcd_info_st *pLcd = getLcdInfo();	/* needed by the 'ASSERT_IN_DISPLAY' macro */
+#endif
   ASSERT_IN_DISPLAY(p);
 
   if ((att&FILL_WHITE) && ((*p&mask) || (*(p+DISPLAY_PLAN_SIZE)&mask) || (*(p+2*DISPLAY_PLAN_SIZE)&mask) || (*(p+3*DISPLAY_PLAN_SIZE)&mask))) {
@@ -594,6 +601,9 @@ void lcd_mask(uint8_t *p, uint8_t mask, LcdFlags att)
 #else
 void lcd_mask(uint8_t *p, uint8_t mask, LcdFlags att)
 {
+#if defined(SIMU)
+  lcd_info_st *pLcd = getLcdInfo();	/* needed by the 'ASSERT_IN_DISPLAY' macro */
+#endif
   ASSERT_IN_DISPLAY(p);
 
   if (att & FORCE)
@@ -1023,11 +1033,7 @@ void putsTmrMode(xcoord_t x, uint8_t y, int8_t mode, LcdFlags att)
     return;
   }
 
-  if (mode >= TMR_VAROFS+MAX_PSWITCH+NUM_CSW
-#if defined(DDC_TARGET)
-	+NB_DDC_DIGITAL
-#endif
-  ) {
+  if (mode >= TMR_VAROFS+MAX_SWITCH) {
     mode++;
   }
 

@@ -1048,11 +1048,7 @@ void menuModelSetup(uint8_t event)
             div_t qr = div(timer->start, 60);
             switch (m_posHorz) {
               case 0:
-                CHECK_INCDEC_MODELVAR(event, timer->mode, -2*(MAX_PSWITCH+NUM_CSW), TMR_VAROFS-1+2*(MAX_PSWITCH+NUM_CSW
-#if defined(DDC_TARGET)
-					+NB_DDC_DIGITAL
-#endif
-                	));
+                CHECK_INCDEC_MODELVAR(event, timer->mode, -2*(MAX_SWITCH), TMR_VAROFS-1+2*(MAX_SWITCH));
                 break;
               case 1:
                 CHECK_INCDEC_MODELVAR_ZERO(event, qr.quot, 59);
