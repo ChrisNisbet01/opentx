@@ -37,9 +37,9 @@
 #include "opentx.h"
 #include "inttypes.h"
 #include "string.h"
-#if defined(DDC_TARGET)
+#if defined(FBP_TARGET)
 extern "C" {
-#include "opentx_ddc.h"
+#include "opentx_fbp.h"
 }
 #endif
 
@@ -918,8 +918,8 @@ void eeLoadModel(uint8_t id)
 #endif
 
 #if defined(SDCARD)
-#if defined(DDC_TARGET)
-    ddc_init();
+#if defined(FBP_TARGET)
+    fbp_init();
 #endif
     closeLogs();
 #endif
@@ -965,10 +965,10 @@ void eeLoadModel(uint8_t id)
 #endif
 
 #if defined(SDCARD)
-#if defined(DDC_TARGET)
+#if defined(FBP_TARGET)
     if (sdMounted() != 0) 
     {
-        ddc_load_model_scripts();
+        fbp_load_model_scripts( id );
     }
 #endif
 #endif

@@ -663,16 +663,17 @@ ifeq ($(PCB), TARANIS)
     CPPSRC += protocols/hubsan.cpp
     CPPSRC += targets/taranis/a7105_driver.cpp
   endif
-  ifeq ($(DDC), YES)
-    CPPDEFS += -DNOPRINT -DNOWRITE -DDDC_TARGET
-    EXTRAINCDIRS += ddc/include
-    CPPSRC += ddc/src/opentx_interface.cpp
-    DDCOBJS = ddc/src/opentx.c ddc/src/processor.c ddc/src/core.c ddc/src/ddc_hash.c ddc/src/itoa.c ddc/src/sine.c ddc/src/atan2.c 
-    DDCOBJS += ddc/src/sqrroot.c ddc/src/gcd.c 
-    DDCOBJS += $(wildcard ddc/src/objects/*.c)
-    DDCOBJS += $(wildcard ddc/src/io/*.c)
+  ifeq ($(FBP), YES)
+  	FBP_DIR = fbp
+    CPPDEFS += -DFBP_TARGET -DNOPRINT -DNOWRITE
+    EXTRAINCDIRS += $(FBP_DIR)/include
+    CPPSRC += $(FBP_DIR)/src/opentx_interface.cpp
+    FBPOBJS = $(FBP_DIR)/src/opentx.c $(FBP_DIR)/src/processor.c $(FBP_DIR)/src/core.c $(FBP_DIR)/src/fbp_hash.c $(FBP_DIR)/src/itoa.c $(FBP_DIR)/src/sine.c $(FBP_DIR)/src/atan2.c 
+    FBPOBJS += $(FBP_DIR)/src/sqrroot.c $(FBP_DIR)/src/gcd.c 
+    FBPOBJS += $(wildcard $(FBP_DIR)/src/objects/*.c)
+    FBPOBJS += $(wildcard $(FBP_DIR)/src/io/*.c)
 
-	SRC += $(DDCOBJS)
+	SRC += $(FBPOBJS)
   endif
 endif
 

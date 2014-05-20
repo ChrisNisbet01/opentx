@@ -40,11 +40,11 @@
 #define ASSERT_IN_DISPLAY(p) assert((p) >= pLcd->displayBuf && (p) < DISPLAY_END)
 
 /* 
-	The DDC task runs in the mixer task's context. To enable DDC to write to the LCD without
+	The FBP task runs in the mixer task's context. To enable FBP to write to the LCD without
 	interrupting the menu task part way through writing/refreshing, we use separate display buffers
 	for menu and mixer tasks. If the mixer task has the display locked, lcdRefresh() will use the mixer task's
 	display buffer, otherwise use the menu task display buffer as usual.
-	Note that menu buttons do not function as usual when a DDC popup is displayed.
+	Note that menu buttons do not function as usual when a FBP popup is displayed.
 	Note the LcdRefresh() is still only called by the menu task, not the mixer task.
 */
 static lcd_info_st lcdInfo[2];
@@ -924,9 +924,9 @@ void putsMixerSource(xcoord_t x, uint8_t y, uint8_t idx, LcdFlags att)
     }
 #endif
   }
-#if defined(DDC_TARGET)
-  else if (idx <= MIXSRC_LAST_DDC_ANA)
-    putsStrIdx(x, y, STR_DDC, idx-MIXSRC_FIRST_DDC_ANA, att);
+#if defined(FBP_TARGET)
+  else if (idx <= MIXSRC_LAST_FBP_ANA)
+    putsStrIdx(x, y, STR_LAI, idx-MIXSRC_FIRST_FBP_ANA, att);
 #endif
 #if defined(GVARS) || !defined(PCBSTD)
   else if (idx <= MIXSRC_LAST_GVAR)

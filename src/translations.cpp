@@ -92,7 +92,7 @@ const pm_char STR_OPEN9X[] PROGMEM =
 #endif
     ISTR(VKEYS)
     ISTR(VSWITCHES)
-    ISTR(DDC_SWITCHES)
+    ISTR(FBP_SWITCHES)
     ISTR(VSRCRAW)
     ISTR(VTMRMODES)
 #if defined(CPUM2560) || defined(CPUARM)
@@ -179,8 +179,8 @@ const pm_char STR_SLOWUP[] PROGMEM = TR_SLOWUP;
 const pm_char STR_MIXER[] PROGMEM = TR_MIXER;
 const pm_char STR_CV[] PROGMEM = TR_CV;
 const pm_char STR_GV[] PROGMEM = TR_GV;
-#if defined(DDC_TARGET)
-const pm_char STR_DDC[] PROGMEM = "DDC";
+#if defined(FBP_TARGET)
+const pm_char STR_LAI[] PROGMEM = "LAI";
 #endif
 const pm_char STR_ACHANNEL[] PROGMEM = TR_ACHANNEL;
 const pm_char STR_RANGE[] PROGMEM = TR_RANGE;
@@ -299,9 +299,6 @@ const pm_char STR_MENUCURVE[] PROGMEM = TR_MENUCURVE;
 const pm_char STR_MENUCUSTOMSWITCH[] PROGMEM = TR_MENUCUSTOMSWITCH;
 const pm_char STR_MENUCUSTOMSWITCHES[] PROGMEM = TR_MENUCUSTOMSWITCHES;
 const pm_char STR_MENUCUSTOMFUNC[] PROGMEM = TR_MENUCUSTOMFUNC;
-#if defined(DDC_TARGET)
-const pm_char STR_DDC_SWITCHES[] PROGMEM = TR_DDC_SWITCHES;
-#endif
 #if defined(FRSKY)
 const pm_char STR_MENUTELEMETRY[] PROGMEM = TR_MENUTELEMETRY;
 const pm_char STR_LIMIT[] PROGMEM = TR_LIMIT;

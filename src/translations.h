@@ -148,9 +148,9 @@ extern const pm_char STR_OPEN9X[];
   #define OFS_VKEYS            (OFS_VSWASHTYPE)
 #endif
 #define OFS_VSWITCHES          (OFS_VKEYS + sizeof(TR_VKEYS))
-#if defined(DDC_TARGET)
-#define OFS_DDCSWITCHES			(OFS_VSWITCHES + sizeof(TR_VSWITCHES))
-#define OFS_VSRCRAW				(OFS_DDCSWITCHES + sizeof(TR_DDC_SWITCHES))
+#if defined(FBP_TARGET)
+#define OFS_FBPSWITCHES			(OFS_VSWITCHES + sizeof(TR_VSWITCHES))
+#define OFS_VSRCRAW				(OFS_FBPSWITCHES + sizeof(TR_FBP_SWITCHES))
 #else
 #define OFS_VSRCRAW            (OFS_VSWITCHES + sizeof(TR_VSWITCHES))
 #endif
@@ -349,7 +349,9 @@ extern const pm_char STR_SLOWUP[];
 extern const pm_char STR_MIXER[];
 extern const pm_char STR_CV[];
 extern const pm_char STR_GV[];
-extern const pm_char STR_DDC[];
+#if defined(FBP_TARGET)
+extern const pm_char STR_LAI[];
+#endif
 extern const pm_char STR_ACHANNEL[];
 extern const pm_char STR_RANGE[];
 extern const pm_char STR_BAR[];

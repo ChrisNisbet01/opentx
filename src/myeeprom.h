@@ -38,8 +38,8 @@
 #define myeeprom_h
 
 #include <inttypes.h>
-#if defined(DDC_TARGET)
-#include "ddc/include/ddc_config.h"
+#if defined(FBP_TARGET)
+#include "fbp/include/fbp_config.h"
 #endif
 
 #define WARN_THR_BIT  0x01
@@ -1053,9 +1053,9 @@ enum SwitchSources {
   SWSRC_SWC,
   SWSRC_LAST_CSW = SWSRC_SW1+NUM_CSW-1,
 
-#if defined(DDC_TARGET)
-  SWSRC_FIRST_DDC_SWITCH,
-  SWSRC_LAST_DDC_SWITCH = SWSRC_FIRST_DDC_SWITCH + NB_DDC_DIGITAL-1,
+#if defined(FBP_TARGET)
+  SWSRC_FIRST_FBP_SWITCH,
+  SWSRC_LAST_FBP_SWITCH = SWSRC_FIRST_FBP_SWITCH + NB_FBP_DIGITAL-1,
 #endif  
 
   SWSRC_ON,
@@ -1175,8 +1175,8 @@ enum MixSources {
   MIXSRC_CH16,
   MIXSRC_LAST_CH = MIXSRC_CH1+NUM_CHNOUT-1,
 
-  MIXSRC_FIRST_DDC_ANA,
-  MIXSRC_LAST_DDC_ANA = MIXSRC_FIRST_DDC_ANA + NB_DDC_ANA - 1,
+  MIXSRC_FIRST_FBP_ANA,
+  MIXSRC_LAST_FBP_ANA = MIXSRC_FIRST_FBP_ANA + NB_FBP_ANA - 1,
 
   /* 
     Nothing below here is able to be used as a mixer source.
@@ -1191,10 +1191,10 @@ enum MixSources {
 
 };
 
-#if !defined(DDC_TARGET)
+#if !defined(FBP_TARGET)
 #define MIXSRC_LAST MIXSRC_LAST_CH
 #else
-#define MIXSRC_LAST MIXSRC_LAST_DDC_ANA
+#define MIXSRC_LAST MIXSRC_LAST_FBP_ANA
 #endif
 
 #define MIN_POINTS 3

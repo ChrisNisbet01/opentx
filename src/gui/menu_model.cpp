@@ -38,9 +38,9 @@
 #ifdef MAVLINK
 #include "gui/view_mavlink.h"
 #endif
-#if defined(DDC_TARGET)
+#if defined(FBP_TARGET)
 extern "C" {
-#include "opentx_ddc.h"
+#include "opentx_fbp.h"
 }
 #endif
 

@@ -35,9 +35,9 @@
  */
 
 #include "opentx.h"
-#if defined(DDC_TARGET)
+#if defined(FBP_TARGET)
 extern "C" {
-#include "opentx_ddc.h"
+#include "opentx_fbp.h"
 }
 #endif
 #if defined(CPUARM)
@@ -155,26 +155,26 @@ const pm_uint8_t bchout_ar[] PROGMEM = {
     0x87, 0x8D, 0x93, 0x9C, 0xB1, 0xB4,
     0xC6, 0xC9, 0xD2, 0xD8, 0xE1, 0xE4 };
 
-#if defined(DDC_TARGET)
-static int ddc_lcd_locked;
-#define LCD_LOCKED() ddc_lcd_locked
+#if defined(FBP_TARGET)
+static int fbp_lcd_locked;
+#define LCD_LOCKED() fbp_lcd_locked
 #endif
 
-#if defined(DDC_TARGET)
-void lock_lcd_for_ddc( void )
+#if defined(FBP_TARGET)
+void lock_lcd_for_fbp( void )
 {
-    ddc_lcd_locked++;
+    fbp_lcd_locked++;
 }
 
-void unlock_lcd_for_ddc( void )
+void unlock_lcd_for_fbp( void )
 {
-    if ( ddc_lcd_locked > 0 )
-        ddc_lcd_locked--;
+    if ( fbp_lcd_locked > 0 )
+        fbp_lcd_locked--;
 }
 
 int is_lcd_locked( void )
 {
-    return ddc_lcd_locked;
+    return fbp_lcd_locked;
 }
 
 #endif
@@ -917,8 +917,8 @@ getvalue_t getValue(uint8_t i)
 #endif
   else if (i<MIXSRC_LAST_PPM) { int16_t x = g_ppmIns[i+1-MIXSRC_PPM1]; if (i<MIXSRC_PPM1+NUM_CAL_PPM-1) { x-= g_eeGeneral.trainer.calib[i+1-MIXSRC_PPM1]; } return x*2; }
   else if (i<MIXSRC_LAST_CH) return ex_chans[i+1-MIXSRC_CH1];
-#if defined(DDC_TARGET)
-  else if (i<MIXSRC_LAST_DDC_ANA) return GetDDCLogicalAnalogInputValue( i+1-MIXSRC_FIRST_DDC_ANA );
+#if defined(FBP_TARGET)
+  else if (i<MIXSRC_LAST_FBP_ANA) return GetFBPLogicalAnalogInputValue( i+1-MIXSRC_FIRST_FBP_ANA );
 #endif
 #if defined(GVARS)
   else if (i<MIXSRC_LAST_GVAR) return GVAR_VALUE(i+1-MIXSRC_GVAR1, getGVarFlightPhase(s_perout_flight_phase, i+1-MIXSRC_GVAR1));
@@ -988,9 +988,9 @@ bool getSwitch(int8_t swtch)
   else if (cs_idx <= MAX_PSWITCH) {
     result = switchState((EnumKeys)(SW_BASE+cs_idx-1));
   }
-#if defined(DDC_TARGET)
-  else if (cs_idx >= SWSRC_FIRST_DDC_SWITCH && cs_idx <= SWSRC_LAST_DDC_SWITCH) {
-    result = GetDDCLogicalDigitalInputValue( cs_idx - SWSRC_FIRST_DDC_SWITCH ) ? true : false;
+#if defined(FBP_TARGET)
+  else if (cs_idx >= SWSRC_FIRST_FBP_SWITCH && cs_idx <= SWSRC_LAST_FBP_SWITCH) {
+    result = GetFBPLogicalDigitalInputValue( cs_idx - SWSRC_FIRST_FBP_SWITCH ) ? true : false;
   }
 #endif
   else {
@@ -1068,8 +1068,8 @@ bool getSwitch(int8_t swtch)
           else if (cs->v1 >= MIXSRC_GVAR1) {
             y = cs->v2;
           }
-#if defined(DDC_TARGET)
-          else if (cs->v1 >= MIXSRC_FIRST_DDC_ANA) {
+#if defined(FBP_TARGET)
+          else if (cs->v1 >= MIXSRC_FIRST_FBP_ANA) {
             y = cs->v2;
           }
 #endif
@@ -1083,9 +1083,9 @@ bool getSwitch(int8_t swtch)
           else if (cs->v1 >= MIXSRC_GVAR1) {
             y = cs->v2; // it's a GVAR
           }
-#if defined(DDC_TARGET)
-          else if (cs->v1 >= MIXSRC_FIRST_DDC_ANA) {
-            y = cs->v2; // it's a DDC variable
+#if defined(FBP_TARGET)
+          else if (cs->v1 >= MIXSRC_FIRST_FBP_ANA) {
+            y = cs->v2; // it's a FBP variable
           }
 #endif
           else {
@@ -1100,8 +1100,8 @@ bool getSwitch(int8_t swtch)
                 result = (x==y);
               else
 #endif
-#if defined(DDC_TARGET)
-              if ( cs->v1 >= MIXSRC_FIRST_DDC_ANA && cs->v1 <= MIXSRC_LAST_DDC_ANA )
+#if defined(FBP_TARGET)
+              if ( cs->v1 >= MIXSRC_FIRST_FBP_ANA && cs->v1 <= MIXSRC_LAST_FBP_ANA )
                 result = (x == y);
               else
 #endif
@@ -2498,8 +2498,8 @@ PLAY_FUNCTION(playValue, uint8_t idx)
     default:
     {
       uint8_t unit = 1;
-#if defined(DDC_TARGET)
-      if (idx < MIXSRC_FIRST_DDC_ANA-1)
+#if defined(FBP_TARGET)
+      if (idx < MIXSRC_FIRST_FBP_ANA-1)
 #else
       if (idx < MIXSRC_GVAR1-1)
 #endif
@@ -3890,7 +3890,7 @@ void perMain()
   StickScrollAllowed = 1 ;
 #endif
 
-#if defined(DDC_TARGET)
+#if defined(FBP_TARGET)
     if ( LCD_LOCKED() == 0 )
 #endif
     {
@@ -4413,10 +4413,10 @@ void mixerTask(void * pdata)
       if (tick10ms) 
       {
         checkTrims();
-#if defined(DDC_TARGET)
-        // temp debug run the DDC at roughly 100Hz
-        // TODO: find a way to run the DDC so we can be more certain about the scan frequency
-        ddc_task();
+#if defined(FBP_TARGET)
+        // temp debug run the FBP at roughly 100Hz
+        // TODO: find a way to run the FBP so we can be more certain about the scan frequency
+        fbp_task();
 #endif        
       }
 

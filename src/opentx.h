@@ -394,8 +394,8 @@ enum EnumKeys {
   #define SW_DSM2_BIND  SW_TRN
 #endif
 
-#if defined(DDC_TARGET)
-#define MAX_SWITCH    (MAX_PSWITCH+NUM_CSW+NB_DDC_DIGITAL)
+#if defined(FBP_TARGET)
+#define MAX_SWITCH    (MAX_PSWITCH+NUM_CSW+NB_FBP_DIGITAL)
 #else
 #define MAX_SWITCH    (MAX_PSWITCH+NUM_CSW)
 #endif
@@ -1563,9 +1563,9 @@ void varioWakeup();
   extern const pm_uchar logo_taranis[];
 #endif
 
-#if defined(DDC_TARGET)
-extern void lock_lcd_for_ddc( void );
-extern void unlock_lcd_for_ddc( void );
+#if defined(FBP_TARGET)
+extern void lock_lcd_for_fbp( void );
+extern void unlock_lcd_for_fbp( void );
 extern int is_lcd_locked( void );
 
 #endif

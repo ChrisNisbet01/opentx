@@ -317,11 +317,11 @@
 #else
   #define TR_CUSTOMSW          "CS1""CS2""CS3""CS4""CS5""CS6""CS7""CS8""CS9""CSA""CSB""CSC"
 #endif
-#define LEN_DDC_SWITCHES       "\003"
-#define TR_DDC_SWITCHES        "DS0""DS1""DS2""DS3"
+#define LEN_FBP_SWITCHES       "\003"
+#define TR_FBP_SWITCHES        "DS0""DS1""DS2""DS3"
 
-#if defined(DDC_TARGET)
-#define EXTRA_VSWITCHES		TR_CUSTOMSW TR_DDC_SWITCHES
+#if defined(FBP_TARGET)
+#define EXTRA_VSWITCHES		TR_CUSTOMSW TR_FBP_SWITCHES
 #else
 #define EXTRA_VSWITCHES		TR_CUSTOMSW
 #endif
