@@ -45,6 +45,7 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 /*----------------------------------------------------------------------------
  *        Exported variables
@@ -53,6 +54,9 @@
 #undef errno
 extern int errno ;
 extern int  _end ;
+extern int _estack;
+
+#define RAM_END (unsigned char *)&_estack
 
 /*----------------------------------------------------------------------------
  *        Exported functions
@@ -61,20 +65,18 @@ extern void _exit( int status ) ;
 extern void _kill( int pid, int sig ) ;
 extern int _getpid ( void ) ;
 
-extern caddr_t _sbrk ( int incr )
+unsigned char *heap = (unsigned char *)&_end;
+extern caddr_t _sbrk(int nbytes)
 {
-    static unsigned char *heap = NULL ;
-    unsigned char *prev_heap ;
-
-    if ( heap == NULL )
-    {
-        heap = (unsigned char *)&_end ;
-    }
-    prev_heap = heap;
-
-    heap += incr ;
-
-    return (caddr_t) prev_heap ;
+  if (heap + nbytes < RAM_END-4096) {
+    unsigned char *prev_heap = heap;
+    heap += nbytes;
+    return (caddr_t) prev_heap;
+  }
+  else {
+    errno = ENOMEM;
+    return ((void*)-1);
+  }
 }
 
 extern int link( char *old, char *nw )
