@@ -1567,6 +1567,8 @@ void varioWakeup();
 extern void lock_lcd_for_fbp( void );
 extern void unlock_lcd_for_fbp( void );
 extern int is_lcd_locked( void );
+extern "C" unsigned int get_free_mem( void );
+extern uint16_t getTmr1MHz( void );
 
 #endif
 #endif

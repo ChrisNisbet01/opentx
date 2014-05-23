@@ -79,6 +79,13 @@ extern caddr_t _sbrk(int nbytes)
   }
 }
 
+#if defined(FBP_TARGET)
+unsigned int get_free_mem( void )
+{
+	return (RAM_END-4096) - heap;
+}
+#endif
+
 extern int link( char *old, char *nw )
 {
     return -1 ;
