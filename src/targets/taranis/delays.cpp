@@ -77,7 +77,7 @@ void delaysInit(void)
   TIM13->CR1 = 0x02;
   TIM13->DIER = 0;
 
-  initTIM12( 1000000 );
+  initTIM12( 1000000 );	/* init to 1MHz */
 }
 
 void delay_01us(uint16_t nb)

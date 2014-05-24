@@ -172,7 +172,7 @@ void menuStatisticsDebug(uint8_t event)
 
 #if defined(CPUARM)
   lcd_putsLeft(5*FH, STR_TMIXMAXMS);
-  lcd_outdezAtt(MENU_DEBUG_COL_OFS, 5*FH, (maxMixerDuration)/20, PREC2);
+  lcd_outdezAtt(MENU_DEBUG_COL_OFS, 5*FH, (maxMixerDuration)/10, PREC2);
 
   lcd_putsLeft(6*FH, STR_FREESTACKMINB);
   lcd_outdezAtt(13*FW, 6*FH, stack_free(0), UNSIGN);

@@ -1575,7 +1575,11 @@ void checkBacklight()
         backlightOn();
     }
 
-    bool backlightOn = (g_eeGeneral.backlightMode == e_backlight_mode_on || lightOffCounter || isFunctionActive(FUNC_BACKLIGHT));
+    bool backlightOn = (g_eeGeneral.backlightMode == e_backlight_mode_on || lightOffCounter || isFunctionActive(FUNC_BACKLIGHT)
+#if defined(FBP_TARGET)
+		|| getFBPBacklight()
+#endif
+    	);
     if (flashCounter) backlightOn = !backlightOn;
     if (backlightOn)
       BACKLIGHT_ON();
@@ -4404,7 +4408,7 @@ void mixerTask(void * pdata)
   while(1) {
 
     if (!s_pulses_paused) {
-      uint16_t t0 = getTmr2MHz();
+      uint16_t t0 = getTmr1MHz();
 
       CoEnterMutexSection(mixerMutex);
       bool tick10ms = doMixerCalculations();
@@ -4425,7 +4429,7 @@ void mixerTask(void * pdata)
         heartbeat = 0;
       }
 
-      t0 = getTmr2MHz() - t0;
+      t0 = getTmr1MHz() - t0;
       if (t0 > maxMixerDuration) maxMixerDuration = t0 ;
     }
 

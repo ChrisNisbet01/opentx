@@ -609,7 +609,9 @@ ifeq ($(PCB), TARANIS)
   BOARDSRC = targets/taranis/board_taranis.cpp
   EXTRABOARDSRC += targets/taranis/lcd_driver.cpp targets/taranis/aspi.cpp targets/taranis/i2c.c
   # include syscalls for malloc support
-  SRC += targets/sky9x/syscalls.c
+  ifneq ($(DEBUG), YES)
+  	SRC += targets/sky9x/syscalls.c
+  endif
   SRC += CoOS/kernel/core.c CoOS/kernel/hook.c CoOS/kernel/task.c CoOS/kernel/event.c CoOS/kernel/time.c CoOS/kernel/timer.c CoOS/kernel/flag.c CoOS/kernel/mutex.c CoOS/kernel/serviceReq.c CoOS/portable/GCC/port.c CoOS/portable/arch.c
   EEPROMSRC = eeprom_common.cpp eeprom_rlc.cpp # TODO later eeprom_conversions.cpp
   PULSESSRC = protocols/pulses_arm.cpp protocols/ppm_arm.cpp protocols/pxx_arm.cpp
