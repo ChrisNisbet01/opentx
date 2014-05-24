@@ -669,7 +669,7 @@ ifeq ($(PCB), TARANIS)
   endif
   ifeq ($(FBP), YES)
   	FBP_DIR = fbp
-    CPPDEFS += -DFBP_TARGET -DNOPRINT -DNOWRITE
+    CPPDEFS += -DFBP_TARGET
     EXTRAINCDIRS += $(FBP_DIR)/include
     CPPSRC += $(FBP_DIR)/src/opentx_interface.cpp
     FBPOBJS = $(FBP_DIR)/src/opentx.c $(FBP_DIR)/src/processor.c $(FBP_DIR)/src/core.c $(FBP_DIR)/src/fbp_hash.c $(FBP_DIR)/src/itoa.c $(FBP_DIR)/src/sine.c $(FBP_DIR)/src/atan2.c 
