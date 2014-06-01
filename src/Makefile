@@ -672,6 +672,8 @@ ifeq ($(PCB), TARANIS)
     CPPDEFS += -DFBP_TARGET
     EXTRAINCDIRS += $(FBP_DIR)/include
     CPPSRC += $(FBP_DIR)/src/opentx_interface.cpp
+    CPPSRC += $(wildcard $(FBP_DIR)/src/gui/*.cpp )
+
     FBPOBJS = $(FBP_DIR)/src/opentx.c $(FBP_DIR)/src/processor.c $(FBP_DIR)/src/core.c $(FBP_DIR)/src/fbp_hash.c $(FBP_DIR)/src/itoa.c $(FBP_DIR)/src/sine.c $(FBP_DIR)/src/atan2.c 
     FBPOBJS += $(FBP_DIR)/src/sqrroot.c $(FBP_DIR)/src/gcd.c 
     FBPOBJS += $(wildcard $(FBP_DIR)/src/objects/*.c)
