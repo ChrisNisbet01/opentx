@@ -224,7 +224,9 @@ void turnBacklightOff(void);
 int usbPlugged(void);
 void usbInit(void);
 void usbStart(void);
+#if defined(USB_JOYSTICK)
 void usbStop(void);
+#endif
 
 #ifdef __cplusplus
 }
@@ -253,7 +255,7 @@ void hapticOff(void);
 #if defined(REVPLUS)
   void hapticOn(uint32_t pwmPercent);
 #else
-  void hapticOn();
+  void hapticOn(void);
   #define HAPTIC_ON()   hapticOn()
 #endif
 
