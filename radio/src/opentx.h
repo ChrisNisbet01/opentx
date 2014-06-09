@@ -126,6 +126,12 @@
   #define CASE_PWM_BACKLIGHT(x)
 #endif
 
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+#define IF_SWH_RANGE_TEST(x) x,
+#else
+#define IF_SWH_RANGE_TEST(x) x,
+#endif
+
 #if defined(FRSKY) && defined(FRSKY_HUB) && defined(GPS)
   #define CASE_GPS(x) x,
 #else
@@ -322,6 +328,9 @@ extern void boardInit();
   #define SWSRC_ID1     SWSRC_SA1
   #define SWSRC_ID2     SWSRC_SA2
   #define SW_DSM2_BIND  SW_SH2
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+  #define SW_RANGE  	SW_SH2	// RANGE test only enabled when this switch is active
+#endif
 #else
   #define NUM_SWITCHES  7
   #define IS_3POS(sw)   ((sw) == 0)
@@ -626,6 +635,10 @@ void zchar2str(char *dest, const char *src, int size);
 #include "keys.h"
 #include "pwr.h"
 
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+void inhibit_swh ( int inhibit );
+bool switchStateRaw(EnumKeys enuk);
+#endif
 bool switchState(EnumKeys enuk);
 uint8_t trimDown(uint8_t idx);
 void readKeysAndTrims();

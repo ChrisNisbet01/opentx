@@ -520,7 +520,7 @@ const pm_char STR_BLCOLOR[]  PROGMEM = TR_BLCOLOR;
   const pm_char STR_PTS[] PROGMEM = TR_PTS;
   const pm_char STR_SMOOTH[] PROGMEM = TR_SMOOTH;
   const pm_char STR_COPY_STICKS_TO_OFS[] PROGMEM = TR_COPY_STICKS_TO_OFS;
-const pm_char STR_COPY_TRIMS_TO_OFS[] PROGMEM = TR_COPY_TRIMS_TO_OFS;
+  const pm_char STR_COPY_TRIMS_TO_OFS[] PROGMEM = TR_COPY_TRIMS_TO_OFS;
   const pm_char STR_TOP_BAR[] PROGMEM = TR_TOP_BAR;
   const pm_char STR_ALTITUDE[] PROGMEM = TR_ALTITUDE;
   const pm_char STR_SCALE[] PROGMEM = TR_SCALE;
@@ -540,6 +540,9 @@ const pm_char STR_COPY_TRIMS_TO_OFS[] PROGMEM = TR_COPY_TRIMS_TO_OFS;
 
 #if defined(PCBTARANIS) || defined(DSM2)
   const pm_char STR_MODULE_RANGE[] PROGMEM = TR_MODULE_RANGE;
+#endif
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+    const pm_char STR_HOLD_TRAINER_KEY[] PROGMEM = TR_HOLD_TRAINER_KEY;
 #endif
 
 #if defined(MAVLINK)

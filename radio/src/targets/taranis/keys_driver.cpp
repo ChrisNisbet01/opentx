@@ -37,6 +37,9 @@
 #include "../../opentx.h"
 
 // TODO FrSky code included PIN_BIND and PIN_POWER
+#if defined(SWH_RANGE_TEST)
+static volatile int swh_is_inhibited;
+#endif
 
 uint32_t readKeys()
 {
@@ -122,7 +125,18 @@ void readKeysAndTrims()
   }
 }
 
+#if defined(SWH_RANGE_TEST)
+void inhibit_swh ( int inhibit )
+{
+    swh_is_inhibited = inhibit;
+}
+#endif
+
+#if defined(SWH_RANGE_TEST)
+bool switchStateRaw(EnumKeys enuk)
+#else
 bool switchState(EnumKeys enuk)
+#endif
 {
   register uint32_t xxx = 0;
 
@@ -225,6 +239,24 @@ bool switchState(EnumKeys enuk)
 
   return xxx;
 }
+
+#if defined(SWH_RANGE_TEST)
+bool switchState(EnumKeys enuk)
+{
+    if ( swh_is_inhibited == 0 || (enuk != SW_SH0 && enuk != SW_SH2) )
+        return switchStateRaw(enuk);
+
+    /* 
+        Must be inhibited and switch is either SW_SH0 or SW_SH2.
+        When SwH operation is inhibited, we say that SH0 is always active,
+        and SH2 is always inactive.
+    */
+    if ( enuk == SW_SH0 )
+        return 1;
+    /* must be SW_SH2 */
+    return 0;
+}
+#endif
 
 #if !defined(SIMU)
 void keysInit()

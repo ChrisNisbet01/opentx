@@ -278,6 +278,9 @@ MENUS_LOCK = NO
 # MASSSTORAGE: The TX will appear as a drive
 USB = JOYSTICK
 
+# Enable support for requiring the SwH switch to be on before enabling the range test (PCBTARANIS only)
+SWH_RANGE_TEST = NO
+
 #------- END BUILD OPTIONS ---------------------------
 
 # Define programs and commands.
@@ -1062,6 +1065,10 @@ endif
 ifeq ($(3POS), POT3)
   CPPDEFS += -DEXTRA_3POS=3
   # EEPROM_VARIANT += ${3POS_VARIANT}
+endif
+
+ifeq ($(SWH_RANGE_TEST), YES)
+  CPPDEFS += -DSWH_RANGE_TEST
 endif
 
 #---------------- Compiler Options C++ ----------------

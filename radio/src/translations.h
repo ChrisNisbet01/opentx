@@ -701,7 +701,7 @@ extern const pm_char STR_BLCOLOR[];
   extern const pm_char STR_PTS[];
   extern const pm_char STR_SMOOTH[];
   extern const pm_char STR_COPY_STICKS_TO_OFS[];
-extern const pm_char STR_COPY_TRIMS_TO_OFS[];
+  extern const pm_char STR_COPY_TRIMS_TO_OFS[];
   extern const pm_char STR_TOP_BAR[];
   extern const pm_char STR_ALTITUDE[];
   extern const pm_char STR_SCALE[];
@@ -721,6 +721,9 @@ extern const pm_char STR_COPY_TRIMS_TO_OFS[];
 
 #if defined(PCBTARANIS) || defined(DSM2)
   extern const pm_char STR_MODULE_RANGE[];
+#endif
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+  extern const pm_char STR_HOLD_TRAINER_KEY[];
 #endif
 
 #if defined(MAVLINK)

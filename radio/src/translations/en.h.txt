@@ -781,6 +781,9 @@
 #define TR_BYTES               "bytes"
 #define TR_MODULE_BIND         TR("[Bnd]", "[Bind]")
 #define TR_MODULE_RANGE        TR("[Rng]", "[Range]")
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+#define TR_HOLD_TRAINER_KEY    "Hold SwH ON to enable\036the range test"
+#endif
 #define TR_RESET_BTN           "[Reset]"
 #define TR_SET                 "[Set]"
 #define TR_TRAINER             "Trainer Port"

@@ -107,6 +107,10 @@ const MenuFuncP_PROGMEM menuTabModel[] PROGMEM = {
 static uint8_t s_copyMode = 0;
 static int8_t s_copySrcRow;
 static int8_t s_copyTgtOfs;
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+static uint8_t    need_trainer_switch_prompt;
+static uint8_t    need_inhibit_swh;
+#endif
 
 uint8_t eeFindEmptyModel(uint8_t id, bool down)
 {
@@ -997,6 +1001,10 @@ void menuModelSetup(uint8_t event)
   #define POT_WARN_ITEMS()                  ((g_model.nPotsToWarn >> 6) ? (uint8_t)NUM_POTS : (uint8_t)0)
   bool CURSOR_ON_CELL = (m_posHorz >= 0);
   MENU_TAB({ 0, 0, CASE_PCBTARANIS(0) 2, CASE_PERSISTENT_TIMERS(0) 0, 0, 2, CASE_PERSISTENT_TIMERS(0) 0, 0, 0, 1, 0, CASE_PCBTARANIS(LABEL(Throttle)) 0, 0, 0, CASE_CPUARM(LABEL(PreflightCheck)) CASE_CPUARM(0) 0, 7, POT_WARN_ITEMS(), NAVIGATION_LINE_BY_LINE|(NUM_STICKS+NUM_POTS+NUM_ROTARY_ENCODERS-1), LABEL(InternalModule), 0, IF_INTERNAL_MODULE_ON(1), IF_INTERNAL_MODULE_ON(IS_D8_RX(0) ? (uint8_t)1 : (uint8_t)2), IF_INTERNAL_MODULE_ON(FAILSAFE_ROWS(INTERNAL_MODULE)), LABEL(ExternalModule), (IS_MODULE_XJT(EXTERNAL_MODULE) || IS_MODULE_DSM2(EXTERNAL_MODULE)) ? (uint8_t)1 : (uint8_t)0, EXTERNAL_MODULE_CHANNELS_ROWS(), (IS_MODULE_XJT(EXTERNAL_MODULE) && IS_D8_RX(EXTERNAL_MODULE)) ? (uint8_t)1 : (IS_MODULE_PPM(EXTERNAL_MODULE) || IS_MODULE_XJT(EXTERNAL_MODULE) || IS_MODULE_DSM2(EXTERNAL_MODULE)) ? (uint8_t)2 : HIDDEN_ROW, IF_EXTERNAL_MODULE_XJT(FAILSAFE_ROWS(EXTERNAL_MODULE)), LABEL(Trainer), 0, TRAINER_CHANNELS_ROWS(), IF_TRAINER_ON(2)});
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+    need_trainer_switch_prompt = 0;
+    need_inhibit_swh = 0;
+#endif
 #elif defined(CPUARM)
   #define IF_EXTERNAL_MODULE_XJT(x)         (IS_MODULE_XJT(EXTERNAL_MODULE) ? (uint8_t)x : HIDDEN_ROW)
   #define IF_EXTERNAL_MODULE_ON(x)          (g_model.externalModule == MODULE_TYPE_NONE ? HIDDEN_ROW : (uint8_t)(x))
@@ -1552,7 +1560,18 @@ void menuModelSetup(uint8_t event)
                 if (l_posHorz == 1)
                   newFlag = PXX_SEND_RXNUM;
                 else if (l_posHorz == 2) {
-                  newFlag = PXX_SEND_RANGECHECK;
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+                    if ( g_eeGeneral.rangeNeedsSwH != 0 )
+                    {
+                        /* while in range test mode, I want to inhibit the range test switch's normal operation. */
+                        inhibit_swh( 1 );
+                        need_inhibit_swh = 1;
+                    }
+                    if ( g_eeGeneral.rangeNeedsSwH != 0 && switchStateRaw(SW_RANGE) == 0 )
+                        need_trainer_switch_prompt = 1;
+                    else
+#endif
+                      newFlag = PXX_SEND_RANGECHECK;
                 }
               }
               pxxFlag[moduleIdx] = newFlag;
@@ -1746,6 +1765,14 @@ void menuModelSetup(uint8_t event)
     displayPopup("RSSI: ");
     lcd_outdezAtt(16+4*FW, 5*FH, frskyData.rssi[0].value, BOLD);
   }
+#if defined(PCBTARANIS) && defined(SWH_RANGE_TEST)
+  else if ( need_trainer_switch_prompt != 0 )
+    {
+    displayPopup(STR_HOLD_TRAINER_KEY);
+    }
+  if ( need_inhibit_swh == 0 )  /* no longer need to inhibit normal SwH operation */
+    inhibit_swh( 0 );
+#endif
 #endif
 }
 
