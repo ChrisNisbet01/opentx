@@ -96,7 +96,7 @@ void hapticOff(void)
   GPIO_ResetBits(GPIO_HAPTIC, PIN_HAPTIC);
 }
 
-void hapticOn()
+void hapticOn(void)
 {
   GPIO_SetBits(GPIO_HAPTIC, PIN_HAPTIC);
 }
