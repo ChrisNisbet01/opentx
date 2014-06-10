@@ -395,6 +395,11 @@ bool getSwitch(int8_t swtch)
   else if (cs_idx == SWSRC_ON) {
     result = true;
   }
+#if defined(FBP_TARGET)
+  else if (cs_idx >= SWSRC_FIRST_FBP_SWITCH && cs_idx <= SWSRC_LAST_FBP_SWITCH) {
+    result = GetFBPLogicalDigitalInputValue( cs_idx - SWSRC_FIRST_FBP_SWITCH ) ? true : false;
+  }
+#endif
   else if (cs_idx <= SWSRC_LAST_SWITCH) {
 #if defined(PCBTARANIS)
     if (flags & GETSWITCH_MIDPOS_DELAY)

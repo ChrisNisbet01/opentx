@@ -648,6 +648,10 @@ void putsMixerSource(xcoord_t x, uint8_t y, uint8_t idx, LcdFlags att)
     }
 #endif
   }
+#if defined(FBP_TARGET)
+  else if (idx <= MIXSRC_LAST_FBP_ANA)
+    putsStrIdx(x, y, STR_LAI, idx-MIXSRC_FIRST_FBP_ANA, att);
+#endif
 #if defined(GVARS) || !defined(PCBSTD)
   else if (idx <= MIXSRC_LAST_GVAR)
     putsStrIdx(x, y, STR_GV, idx-MIXSRC_GVAR1+1, att);

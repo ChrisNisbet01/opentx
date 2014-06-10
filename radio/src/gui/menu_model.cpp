@@ -37,6 +37,9 @@
 #ifdef MAVLINK
 #include "gui/view_mavlink.h"
 #endif
+#if defined(FBP_TARGET)
+#include "opentx_fbp.h"
+#endif
 
 #define WCHART 32
 #define X0     (LCD_W-WCHART-2)

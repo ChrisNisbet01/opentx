@@ -343,7 +343,7 @@ extern void boardInit();
   #define KEY_PLUS   KEY_RIGHT
   #define KEY_MINUS  KEY_LEFT
 #endif
-
+#include "fbp/include/fbp_config.h"
 #include "myeeprom.h"
 
 enum PotType {
@@ -1729,6 +1729,13 @@ void varioWakeup();
 
 #if defined(USB_MASS_STORAGE)
   extern void usbPluggedIn();
+#endif
+#if defined(FBP_TARGET)
+extern void lock_lcd_for_fbp( void );
+extern void unlock_lcd_for_fbp( void );
+extern int is_lcd_locked( void );
+extern "C" unsigned int get_free_mem( void );
+extern uint16_t getTmr1MHz( void );
 #endif
 
 #endif

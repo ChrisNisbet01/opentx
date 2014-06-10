@@ -151,6 +151,9 @@ void menuAboutView(uint8_t event);
 void menuMainViewChannelsMonitor(uint8_t event);
 void menuChannelsView(uint8_t event);
 #endif
+#if defined(FBP_TARGET)
+void menuFBPView(uint8_t event);
+#endif
 
 #if defined(NAVIGATION_POT1)
   extern int16_t p1valdiff;

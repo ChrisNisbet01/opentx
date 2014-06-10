@@ -290,11 +290,17 @@ void lcdSetContrast();
   extern uint8_t lcd_buf[DISPLAY_BUF_SIZE];
 #endif
 
+#if defined(FBP_TARGET)
+extern int fbp_lcd_locked;
+#define FBP_LCD_LOCKED()	fbp_lcd_locked
+#else
+#define FBP_LCD_LOCKED()	0
+#endif
 #if defined(LUA)
   extern bool lcd_locked;
-  #define LCD_LOCKED() lcd_locked
+  #define LCD_LOCKED() (lcd_locked || FBP_LCD_LOCKED())
 #else
-  #define LCD_LOCKED() 0
+  #define LCD_LOCKED() (FBP_LCD_LOCKED())
 #endif
 
 char * strAppend(char * dest, const char * source);

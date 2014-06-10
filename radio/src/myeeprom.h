@@ -38,6 +38,9 @@
 #define myeeprom_h
 
 #include <inttypes.h>
+#if defined(FBP_TARGET)
+#include "fbp_config.h"
+#endif
 
 #define WARN_THR_BIT  0x01
 #define WARN_BEP_BIT  0x80
@@ -1423,6 +1426,11 @@ enum SwitchSources {
   SWSRC_SWC,
   SWSRC_LAST_LOGICAL_SWITCH = SWSRC_FIRST_LOGICAL_SWITCH+NUM_LOGICAL_SWITCH-1,
 
+#if defined(FBP_TARGET)
+  SWSRC_FIRST_FBP_SWITCH,
+  SWSRC_LAST_FBP_SWITCH = SWSRC_FIRST_FBP_SWITCH + NB_FBP_DIGITAL-1,
+#endif  
+
   SWSRC_ON,
   SWSRC_One,
 
@@ -1556,6 +1564,10 @@ enum MixSources {
   MIXSRC_CH16,
   MIXSRC_LAST_CH = MIXSRC_CH1+NUM_CHNOUT-1,
 
+  MIXSRC_FIRST_FBP_ANA,
+  MIXSRC_LAST_FBP_ANA = MIXSRC_FIRST_FBP_ANA + NB_FBP_ANA - 1,
+
+
   MIXSRC_GVAR1,
   MIXSRC_LAST_GVAR = MIXSRC_GVAR1+MAX_GVARS-1,
 
@@ -1564,7 +1576,12 @@ enum MixSources {
 };
 
 #define MIXSRC_FIRST   (MIXSRC_NONE+1)
-#define MIXSRC_LAST    MIXSRC_LAST_CH
+#if !defined(FBP_TARGET)
+#define MIXSRC_LAST MIXSRC_LAST_CH
+#else
+#define MIXSRC_LAST MIXSRC_LAST_FBP_ANA
+#endif
+
 #define INPUTSRC_FIRST MIXSRC_Rud
 #define INPUTSRC_LAST  MIXSRC_LAST_TELEM
 

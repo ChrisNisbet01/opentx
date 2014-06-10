@@ -37,6 +37,9 @@
 #include "opentx.h"
 #include "inttypes.h"
 #include "string.h"
+#if defined(FBP_TARGET)
+#include "opentx_fbp.h"
+#endif
 
 uint8_t   s_write_err = 0;    // error reasons
 RlcFile   theFile;  //used for any file operation
@@ -946,6 +949,9 @@ void eeLoadModel(uint8_t id)
 #endif
 
 #if defined(SDCARD)
+#if defined(FBP_TARGET)
+    fbp_init();
+#endif
     closeLogs();
 #endif
 
@@ -997,6 +1003,14 @@ void eeLoadModel(uint8_t id)
 
     LOAD_MODEL_CURVES();
 
+#if defined(SDCARD)
+#if defined(FBP_TARGET)
+    if (sdMounted() != 0) 
+    {
+        fbp_load_model_scripts( id );
+    }
+#endif
+#endif
     resumeMixerCalculations();
     // TODO pulses should be started after mixer calculations ...
 

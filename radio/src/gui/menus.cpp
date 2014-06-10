@@ -1415,6 +1415,11 @@ bool isSourceAvailable(int source)
     return (cs->func != LS_FUNC_NONE);
   }
 
+#if !defined(FBP_TARGET)
+  if (source>=MIXSRC_FIRST_FBP_ANA && source<=MIXSRC_LAST_FBP_ANA)
+    return false;
+#endif
+
 #if !defined(GVARS)
   if (source>=MIXSRC_GVAR1 && source<=MIXSRC_LAST_GVAR)
     return false;

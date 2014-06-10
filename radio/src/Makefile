@@ -766,6 +766,21 @@ ifeq ($(PCB), TARANIS)
     CPPDEFS += -DCHANNELS_MONITOR_INV_HIDE
   endif
 
+  ifeq ($(FBP), YES)
+  	FBP_DIR = fbp
+    CPPDEFS += -DFBP_TARGET
+    EXTRAINCDIRS += $(FBP_DIR)/include
+    CPPSRC += $(FBP_DIR)/src/opentx_interface.cpp
+    CPPSRC += $(wildcard $(FBP_DIR)/src/gui/*.cpp )
+
+    FBPOBJS = $(FBP_DIR)/src/opentx.c $(FBP_DIR)/src/processor.c $(FBP_DIR)/src/core.c $(FBP_DIR)/src/fbp_hash.c $(FBP_DIR)/src/itoa.c $(FBP_DIR)/src/sine.c $(FBP_DIR)/src/atan2.c 
+    FBPOBJS += $(FBP_DIR)/src/sqrroot.c $(FBP_DIR)/src/gcd.c 
+    FBPOBJS += $(wildcard $(FBP_DIR)/src/objects/*.c)
+    FBPOBJS += $(wildcard $(FBP_DIR)/src/io/*.c)
+
+	SRC += $(FBPOBJS)
+  endif
+  
 endif
 
 CC      = $(TRGT)gcc

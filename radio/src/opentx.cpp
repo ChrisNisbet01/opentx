@@ -35,6 +35,9 @@
  */
 
 #include "opentx.h"
+#if defined(FBP_TARGET)
+#include "opentx_fbp.h"
+#endif
 
 #if defined(CPUARM)
 #define MENUS_STACK_SIZE    2000
@@ -158,6 +161,29 @@ const pm_uint8_t bchout_ar[] PROGMEM = {
     0x4B, 0x4E, 0x63, 0x6C, 0x72, 0x78,
     0x87, 0x8D, 0x93, 0x9C, 0xB1, 0xB4,
     0xC6, 0xC9, 0xD2, 0xD8, 0xE1, 0xE4 };
+
+#if defined(FBP_TARGET)
+int fbp_lcd_locked;
+#endif
+
+#if defined(FBP_TARGET)
+void lock_lcd_for_fbp( void )
+{
+    fbp_lcd_locked++;
+}
+
+void unlock_lcd_for_fbp( void )
+{
+    if ( fbp_lcd_locked > 0 )
+        fbp_lcd_locked--;
+}
+
+int is_lcd_locked( void )
+{
+    return LCD_LOCKED();
+}
+
+#endif
 
 uint8_t channel_order(uint8_t x)
 {
@@ -962,7 +988,11 @@ void checkBacklight()
         backlightOn();
     }
 
-    bool backlightOn = (g_eeGeneral.backlightMode == e_backlight_mode_on || lightOffCounter || isFunctionActive(FUNCTION_BACKLIGHT));
+    bool backlightOn = (g_eeGeneral.backlightMode == e_backlight_mode_on || lightOffCounter || isFunctionActive(FUNCTION_BACKLIGHT)
+#if defined(FBP_TARGET)
+		|| getFBPBacklight()
+#endif
+    	);
     if (flashCounter) backlightOn = !backlightOn;
     if (backlightOn)
       BACKLIGHT_ON();
@@ -1815,7 +1845,11 @@ PLAY_FUNCTION(playValue, uint8_t idx)
     default:
     {
       uint8_t unit = 1;
+#if defined(FBP_TARGET)
+      if (idx < MIXSRC_FIRST_FBP_ANA)
+#else
       if (idx < MIXSRC_GVAR1)
+#endif
         val = calcRESXto100(val);
       if (idx >= MIXSRC_FIRST_TELEM+TELEM_ALT-1 && idx <= MIXSRC_FIRST_TELEM+TELEM_GPSALT-1)
         unit = idx - (MIXSRC_FIRST_TELEM+TELEM_ALT-1);
@@ -3444,6 +3478,20 @@ void mixerTask(void * pdata)
         wdt_reset();
         heartbeat = 0;
       }
+#if defined(FBP_TARGET)
+      {
+	  static tmr10ms_t lastTMR = 0;
+
+	  tmr10ms_t tmr10ms = get_tmr10ms();
+	  uint8_t tick10ms = (tmr10ms >= lastTMR ? tmr10ms - lastTMR : 1);
+      if (tick10ms) 
+      {
+        // temp debug run the FBP at roughly 100Hz
+        // TODO: find a way to run the FBP so we can be more certain about the scan frequency
+        fbp_task();
+      }
+      }
+#endif        
 
       t0 = getTmr2MHz() - t0;
       if (t0 > maxMixerDuration) maxMixerDuration = t0 ;

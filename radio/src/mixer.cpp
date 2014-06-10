@@ -314,6 +314,9 @@ getvalue_t getValue(uint8_t i)
   else if (i<=MIXSRC_LAST_LOGICAL_SWITCH) return getSwitch(SWSRC_FIRST_LOGICAL_SWITCH+i-MIXSRC_FIRST_LOGICAL_SWITCH) ? 1024 : -1024;
   else if (i<=MIXSRC_LAST_TRAINER) { int16_t x = g_ppmIns[i-MIXSRC_FIRST_TRAINER]; if (i<MIXSRC_FIRST_TRAINER+NUM_CAL_PPM) { x-= g_eeGeneral.trainer.calib[i-MIXSRC_FIRST_TRAINER]; } return x*2; }
   else if (i<=MIXSRC_LAST_CH) return ex_chans[i-MIXSRC_CH1];
+#if defined(FBP_TARGET)
+  else if (i<MIXSRC_LAST_FBP_ANA) return GetFBPLogicalAnalogInputValue( i+1-MIXSRC_FIRST_FBP_ANA );
+#endif
 
 #if defined(GVARS)
   else if (i<=MIXSRC_LAST_GVAR) return GVAR_VALUE(i-MIXSRC_GVAR1, getGVarFlightPhase(mixerCurrentFlightMode, i-MIXSRC_GVAR1));

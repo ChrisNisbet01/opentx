@@ -435,10 +435,28 @@ void displayVoltageOrAlarm()
 #endif
 
 #if defined(PCBTARANIS)
+#if defined(FBP_TARGET)
+void menuMainViewFBPMonitor(uint8_t event)
+{
+  switch(event) {
+    case EVT_KEY_BREAK(KEY_PAGE):
+    case EVT_KEY_BREAK(KEY_EXIT):
+      chainMenu(menuMainView);
+      return;
+  }
+
+  return menuFBPView(event);
+}
+#endif
+
 void menuMainViewChannelsMonitor(uint8_t event)
 {
   switch(event) {
     case EVT_KEY_BREAK(KEY_PAGE):
+#if defined(FBP_TARGET)
+        chainMenu(menuMainViewFBPMonitor);
+		return;	
+#endif
     case EVT_KEY_BREAK(KEY_EXIT):
       chainMenu(menuMainView);
       return;

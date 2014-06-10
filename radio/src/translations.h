@@ -152,7 +152,12 @@ extern const pm_char STR_OPEN9X[];
   #define OFS_VKEYS             (OFS_VSWASHTYPE)
 #endif
 #define OFS_VSWITCHES           (OFS_VKEYS + sizeof(TR_VKEYS))
+#if defined(FBP_TARGET)
+#define OFS_FBPSWITCHES			(OFS_VSWITCHES + sizeof(TR_VSWITCHES))
+#define OFS_VSRCRAW				(OFS_FBPSWITCHES + sizeof(TR_FBP_SWITCHES))
+#else
 #define OFS_VSRCRAW             (OFS_VSWITCHES + sizeof(TR_VSWITCHES))
+#endif
 #define OFS_VTMRMODES           (OFS_VSRCRAW + sizeof(TR_VSRCRAW))
 #define OFS_DATETIME            (OFS_VTMRMODES + sizeof(TR_VTMRMODES))
 #if defined(CPUM2560) || defined(CPUARM)
@@ -363,6 +368,9 @@ extern const pm_char STR_SLOWUP[];
 extern const pm_char STR_MIXER[];
 extern const pm_char STR_CV[];
 extern const pm_char STR_GV[];
+#if defined(FBP_TARGET)
+extern const pm_char STR_LAI[];
+#endif
 extern const pm_char STR_ACHANNEL[];
 extern const pm_char STR_RANGE[];
 extern const pm_char STR_BAR[];
