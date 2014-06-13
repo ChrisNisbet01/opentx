@@ -38,9 +38,7 @@
 #include "inttypes.h"
 #include "string.h"
 #if defined(FBP_TARGET)
-extern "C" {
 #include "opentx_fbp.h"
-}
 #endif
 
 uint8_t   s_write_err = 0;    // error reasons

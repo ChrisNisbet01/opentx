@@ -1085,7 +1085,7 @@ bool getSwitch(int8_t swtch)
           }
 #if defined(FBP_TARGET)
           else if (cs->v1 >= MIXSRC_FIRST_FBP_ANA) {
-            y = cs->v2; // it's a FBP variable
+            y = cs->v2; // it's an FBP variable
           }
 #endif
           else {
