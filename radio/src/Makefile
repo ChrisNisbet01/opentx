@@ -717,20 +717,24 @@ ifeq ($(PCB), TARANIS)
     EXTRABOARDSRC += targets/taranis/usbd_storage_msd.cpp
   endif
   
-  ifneq ($(LUA), NO)
-    ifeq ($(LUA), YES)
-      CPPDEFS += -DLUA_MODEL_SCRIPTS
-    endif
-    CPPDEFS += -DLUA
-    INCDIRS += lua/src
-    CPPSRC += lua.cpp
-    LUASRC = lua/src/lapi.c lua/src/lcode.c lua/src/lctype.c lua/src/ldebug.c lua/src/ldo.c lua/src/ldump.c lua/src/lfunc.c lua/src/lgc.c lua/src/llex.c lua/src/lmem.c \
+  ifneq ($(FBP), YES)
+    ifneq ($(LUA), NO)
+      ifeq ($(LUA), YES)
+        CPPDEFS += -DLUA_MODEL_SCRIPTS
+      endif
+      CPPDEFS += -DLUA
+      INCDIRS += lua/src
+      CPPSRC += lua.cpp
+      LUASRC = lua/src/lapi.c lua/src/lcode.c lua/src/lctype.c lua/src/ldebug.c lua/src/ldo.c lua/src/ldump.c lua/src/lfunc.c lua/src/lgc.c lua/src/llex.c lua/src/lmem.c \
            lua/src/lobject.c lua/src/lopcodes.c lua/src/lparser.c lua/src/lstate.c lua/src/lstring.c lua/src/ltable.c lua/src/ltm.c lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c \
            lua/src/lbaselib.c lua/src/linit.c lua/src/lmathlib.c lua/src/loadlib.c lua/src/lauxlib.c lua/src/ltablib.c lua/src/lcorolib.c 
            # lua/src/loslib.c lua/src/lbitlib.c lua/src/lstrlib.c lua/src/liolib.c lua/src/ldblib.c
-    SRC += $(LUASRC) 
-  endif           
-
+      SRC += $(LUASRC) 
+    endif           
+  else ifneq ($(LUA), NO)
+    $(error Sorry, can't have both LUA and FBP in the firmware)
+  endif
+  
   ifeq ($(SDCARD), YES)
     EXTRABOARDSRC += FatFs/ff.c FatFs/fattime.c FatFs/option/ccsbcs.c targets/taranis/diskio.cpp
     CPPDEFS += -DVOICE
@@ -776,6 +780,8 @@ ifeq ($(PCB), TARANIS)
     FBPOBJS = $(FBP_DIR)/src/opentx.c $(FBP_DIR)/src/processor.c $(FBP_DIR)/src/core.c $(FBP_DIR)/src/fbp_hash.c $(FBP_DIR)/src/itoa.c $(FBP_DIR)/src/sine.c $(FBP_DIR)/src/atan2.c 
     FBPOBJS += $(FBP_DIR)/src/sqrroot.c $(FBP_DIR)/src/gcd.c 
     FBPOBJS += $(wildcard $(FBP_DIR)/src/objects/*.c)
+    # don't want to compile mixer object in V2
+	FBPOBJS := $(filter-out $(FBP_DIR)/src/objects/getmixer.c,$(FBPOBJS))
     FBPOBJS += $(wildcard $(FBP_DIR)/src/io/*.c)
 
 	SRC += $(FBPOBJS)

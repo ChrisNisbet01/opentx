@@ -607,7 +607,7 @@ void putsMixerSource(xcoord_t x, uint8_t y, uint8_t idx, LcdFlags att)
   }
 #endif
 
-#if defined(PCBTARANIS)
+#if defined(PCBTARANIS) && defined(LUA)
   else if (idx <= MIXSRC_LAST_LUA) {
     div_t qr = div(idx-MIXSRC_FIRST_LUA, MAX_SCRIPT_OUTPUTS);
 #if defined(LUA_MODEL_SCRIPTS)
