@@ -39,6 +39,7 @@
 #define DISPLAY_END (pLcd->displayBuf+DISPLAY_PLAN_SIZE)
 #define ASSERT_IN_DISPLAY(p) assert((p) >= pLcd->displayBuf && (p) < DISPLAY_END)
 
+#if defined(FBP_TARGET)
 /* 
 	The FBP task runs in the mixer task's context. To enable FBP to write to the LCD without
 	interrupting the menu task part way through writing/refreshing, we use separate display buffers
@@ -50,14 +51,19 @@
 static lcd_info_st lcdInfo[2];
 #define MENU_TASK_LCD_INFO_INDEX 0
 #define MIXER_TASK_LCD_INFO_INDEX 1
+#else
+static lcd_info_st lcdInfo[1];
+#define MENU_TASK_LCD_INFO_INDEX 0
+#endif
 
 lcd_info_st *getLcdInfo( void )
 {
+#if defined(FBP_TARGET)
 #if !defined(SIMU)
 	if ( CoGetCurTaskID() == mixerTaskId )
 		return &lcdInfo[MIXER_TASK_LCD_INFO_INDEX];
 #endif
-
+#endif
 	return &lcdInfo[MENU_TASK_LCD_INFO_INDEX];
 }
 
@@ -68,8 +74,10 @@ lcd_info_st *getLcdRefreshInfo( void )
 		At this point we need the mixer task's displayBuf if the LCD is locked,
 		else return the normal menu task displayBuf.
 	*/
+#if defined(FBP_TARGET)
 	if ( is_lcd_locked() != 0 )
 		return &lcdInfo[MIXER_TASK_LCD_INFO_INDEX];
+#endif
 
 	return &lcdInfo[MENU_TASK_LCD_INFO_INDEX];
 }

@@ -1175,8 +1175,10 @@ enum MixSources {
   MIXSRC_CH16,
   MIXSRC_LAST_CH = MIXSRC_CH1+NUM_CHNOUT-1,
 
+#if defined(FBP_TARGET)
   MIXSRC_FIRST_FBP_ANA,
   MIXSRC_LAST_FBP_ANA = MIXSRC_FIRST_FBP_ANA + NB_FBP_ANA - 1,
+#endif
 
   /* 
     Nothing below here is able to be used as a mixer source.
