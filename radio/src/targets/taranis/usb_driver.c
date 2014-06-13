@@ -73,7 +73,7 @@ void usbStart(void)
 #if defined(USB_JOYSTICK)
   //intialize USB as HID device
   USBD_Init(&USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, &USBD_HID_cb, &USR_cb);
-#elif defined(USB_DRIVES)
+#elif defined(USB_MASS_STORAGE)
   //intialize USB as MSC device
   USBD_Init(&USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, &USBD_MSC_cb, &USR_cb);
 #endif

@@ -2469,6 +2469,10 @@ void opentxClose()
 
   g_eeGeneral.unexpectedShutdown = 0;
 
+#if defined(USB_MASS_STORAGE)
+  pausePulses();
+#endif
+
   eeDirty(EE_GENERAL);
   eeCheck(true);
 }
@@ -2666,7 +2670,7 @@ void perMain()
 #if defined(PCBTARANIS) && !defined(SIMU)
   static bool usbStarted = false;
   if (!usbStarted && usbPlugged()) {
-#if defined(USB_DRIVES)
+#if defined(USB_MASS_STORAGE)
     opentxClose();
 #endif
     usbStart();
@@ -2755,7 +2759,7 @@ void perMain()
   const char *warn = s_warning;
   uint8_t menu = s_menu_count;
 
-#if defined(USB_DRIVES)
+#if defined(USB_MASS_STORAGE)
   if (usbPlugged()) {
     lcd_clear();
     menuMainView(0);
