@@ -1415,9 +1415,11 @@ bool isSourceAvailable(int source)
     return (cs->func != LS_FUNC_NONE);
   }
 
+#if 0	/* can't have these enumerations defined as the enumeration values overflow max value (8 bits) */
 #if !defined(FBP_TARGET)
   if (source>=MIXSRC_FIRST_FBP_ANA && source<=MIXSRC_LAST_FBP_ANA)
     return false;
+#endif
 #endif
 
 #if !defined(GVARS)
