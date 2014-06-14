@@ -262,6 +262,11 @@ bool getLogicalSwitch(uint8_t idx)
       else if (v1 >= MIXSRC_GVAR1) {
         y = ls->v2;
       }
+#if defined(FBP_TARGET)
+      else if (v1 >= MIXSRC_FIRST_FBP_ANA) {
+        y = ls->v2;
+      }
+#endif
       else {
         y = calc100toRESX(ls->v2);
       }
@@ -272,6 +277,11 @@ bool getLogicalSwitch(uint8_t idx)
       else if (v1 >= MIXSRC_GVAR1) {
         y = ls->v2; // it's a GVAR
       }
+#if defined(FBP_TARGET)
+      else if (v1 >= MIXSRC_FIRST_FBP_ANA) {
+        y = ls->v2; // it's an FBP variable
+      }
+#endif
       else {
         y = calc100toRESX(ls->v2);
       }
@@ -289,7 +299,12 @@ bool getLogicalSwitch(uint8_t idx)
             result = (x==y);
           else
 #endif
-          result = (abs(x-y) < (1024 / STICK_TOLERANCE));
+#if defined(FBP_TARGET)
+          if ( v1 >= MIXSRC_FIRST_FBP_ANA && v1 <= MIXSRC_LAST_FBP_ANA )
+            result = (x == y);
+          else
+#endif
+            result = (abs(x-y) < (1024 / STICK_TOLERANCE));
           break;
         case LS_FUNC_VPOS:
           result = (x>y);

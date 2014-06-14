@@ -454,8 +454,8 @@ void menuMainViewChannelsMonitor(uint8_t event)
   switch(event) {
     case EVT_KEY_BREAK(KEY_PAGE):
 #if defined(FBP_TARGET)
-        chainMenu(menuMainViewFBPMonitor);
-		return;	
+      chainMenu(menuMainViewFBPMonitor);
+      return;	
 #endif
     case EVT_KEY_BREAK(KEY_EXIT):
       chainMenu(menuMainView);

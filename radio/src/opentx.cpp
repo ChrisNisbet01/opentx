@@ -178,9 +178,9 @@ void unlock_lcd_for_fbp( void )
         fbp_lcd_locked--;
 }
 
-int is_lcd_locked( void )
+int is_lcd_locked_for_fbp( void )
 {
-    return LCD_LOCKED();
+    return FBP_LCD_LOCKED();
 }
 
 #endif
