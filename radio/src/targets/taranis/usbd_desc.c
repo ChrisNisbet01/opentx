@@ -73,7 +73,7 @@
   #define USBD_PRODUCT_FS_STRING          "FrSky Taranis Joystick"
   #define USBD_CONFIGURATION_FS_STRING    "HID Config"
   #define USBD_INTERFACE_FS_STRING        "HID Interface"
-#elif defined(USB_DRIVES)
+#elif defined(USB_MASS_STORAGE)
   #define USBD_PID                        0x5720
   #define USBD_PRODUCT_FS_STRING          "FrSky Taranis Mass Storage"
   #define USBD_CONFIGURATION_FS_STRING    "MSC Config"
