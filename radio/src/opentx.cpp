@@ -2477,10 +2477,6 @@ void opentxClose()
 
   g_eeGeneral.unexpectedShutdown = 0;
 
-#if defined(USB_MASS_STORAGE)
-  pausePulses();
-#endif
-
   eeDirty(EE_GENERAL);
   eeCheck(true);
 }
