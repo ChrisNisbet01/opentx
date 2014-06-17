@@ -2678,6 +2678,10 @@ void perMain()
     opentxClose();
 #endif
     usbStart();
+#if defined(USB_MASS_STORAGE)
+    extern void usbPluggedIn();
+    usbPluggedIn();
+#endif
     usbStarted = true;
   }
   
