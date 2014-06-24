@@ -1051,6 +1051,9 @@ void menuModelSetup(uint8_t event)
 
   uint8_t sub = m_posVert - 1;
   int8_t editMode = s_editMode;
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
 
   for (uint8_t i=0; i<LCD_LINES-1; i++) {
     uint8_t y = 1 + 1*FH + i*FH;
@@ -2427,6 +2430,9 @@ bool moveCurve(uint8_t index, int8_t shift, int8_t custom=0)
 #if defined(PCBTARANIS)
 void displayPresetChoice(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   displayWarning(event);
   lcd_outdezAtt(WARNING_LINE_X+FW*7, WARNING_LINE_Y, 45*s_warning_input_value/4, LEFT|INVERS);
   lcd_putcAtt(lcdLastPos, WARNING_LINE_Y, '@', INVERS);
@@ -2469,6 +2475,9 @@ void onCurveOneMenu(const char *result)
 
 void menuModelCurveOne(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   static uint8_t pointsOfs = 0;
   CurveInfo & crv = g_model.curves[s_curveChan];
   int8_t * points = curveAddress(s_curveChan);
@@ -2591,6 +2600,9 @@ void menuModelCurveOne(uint8_t event)
 #else
 void menuModelCurveOne(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   TITLE(STR_MENUCURVE);
   lcd_outdezAtt(PSIZE(TR_MENUCURVE)*FW+1, 0, s_curveChan+1, INVERS|LEFT);
   DISPLAY_PROGRESS_BAR(20*FW+1);
@@ -3153,6 +3165,9 @@ void gvarWeightItem(xcoord_t x, uint8_t y, MixData *md, uint8_t attr, uint8_t ev
 
 void menuModelMixOne(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
 #if defined(PCBTARANIS)
   if (event == EVT_KEY_LONG(KEY_MENU)) {
     pushMenu(menuChannelsView);
@@ -3420,6 +3435,9 @@ void onExpoMixMenu(const char *result)
 #if LCD_W >= 212
 void displayHeaderChannelName(uint8_t ch)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   uint8_t len = zlen(g_model.limitData[ch-1].name, sizeof(g_model.limitData[ch-1].name));
   if (len) {
     lcd_putc(17*FW, 0, ' ');
@@ -4137,6 +4155,9 @@ void menuModelLimits(uint8_t event)
 
 void menuModelCurvesAll(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
 #if defined(GVARS) && defined(PCBSTD)
   SIMPLE_MENU(STR_MENUCURVES, menuTabModel, e_CurvesAll, 1+MAX_CURVES+MAX_GVARS);
 #else
@@ -4368,6 +4389,9 @@ enum LogicalSwitchFields {
 
 void menuModelLogicalSwitchOne(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   TITLE(STR_MENULOGICALSWITCH);
 
   LogicalSwitchData * cs = lswAddress(s_currIdx);
@@ -4520,6 +4544,9 @@ void menuModelLogicalSwitchOne(uint8_t event)
 
 void menuModelLogicalSwitches(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   SIMPLE_MENU(STR_MENULOGICALSWITCHES, menuTabModel, e_LogicalSwitches, NUM_LOGICAL_SWITCH+1);
 
   uint8_t y = 0;
@@ -4664,6 +4691,9 @@ void menuModelLogicalSwitches(uint8_t event)
       MENU_ADD_ITEM(STR_CLEAR);
     menuHandler = onLogicalSwitchesMenu;
   }
+#endif
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
 #endif
 
   for (uint8_t i=0; i<LCD_LINES-1; i++) {
@@ -5001,6 +5031,9 @@ void onCustomFunctionsMenu(const char *result)
 
 void menuModelCustomFunctions(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   MENU(STR_MENUCUSTOMFUNC, menuTabModel, e_CustomFunctions, NUM_CFN+1, {0, NAVIGATION_LINE_BY_LINE|4/*repeated*/});
 
   uint8_t y;
@@ -5362,6 +5395,9 @@ enum menuModelCustomScriptItems {
 
 void menuModelCustomScriptOne(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   TITLE(STR_MENUCUSTOMSCRIPT);
 
   ScriptData &sd = g_model.scriptsData[s_currIdx];
@@ -5626,6 +5662,9 @@ enum menuModelTelemetryItems {
 
 void menuModelTelemetry(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   MENU(STR_MENUTELEMETRY, menuTabModel, e_Telemetry, ITEM_TELEMETRY_MAX+1, {0, TELEMETRY_TYPE_ROWS CHANNEL_ROWS, CHANNEL_ROWS, CASE_CPUARM(CHANNEL_ROWS) CASE_CPUARM(CHANNEL_ROWS) RSSI_ROWS, USRDATA_LINES 0, 0, IF_FAS_OFFSET(0) CASE_CPUARM(0) CASE_VARIO(LABEL(Vario)) CASE_VARIO(0) CASE_VARIO(VARIO_RANGE_ROWS) CASE_PCBTARANIS(LABEL(TopBar)) CASE_PCBTARANIS(0) SCREEN_TYPE_ROWS, 2, 2, 2, 2, SCREEN_TYPE_ROWS, 2, 2, 2, 2, CASE_CPUARM(SCREEN_TYPE_ROWS) CASE_CPUARM(2) CASE_CPUARM(2) CASE_CPUARM(2) CASE_CPUARM(2)});
 
   uint8_t sub = m_posVert - 1;

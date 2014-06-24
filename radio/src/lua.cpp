@@ -1527,6 +1527,9 @@ void luaTask(uint8_t evt)
           }
           else if (luaDisplayStatistics) {
             int gc = 1000*lua_gc(L, LUA_GCCOUNT, 0) + lua_gc(L, LUA_GCCOUNTB, 0);
+#if defined(FBP_TARGET)
+            lcd_info_st *pLcd = getLcdInfo();
+#endif
             lcd_hline(0, 7*FH-1, lcdLastPos+FW, ERASE);
             lcd_puts(0, 7*FH, "GV Use: ");
             lcd_outdezAtt(lcdLastPos, 7*FH, gc, LEFT);

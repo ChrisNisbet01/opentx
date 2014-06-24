@@ -642,7 +642,12 @@ void lcdSetRefVolt(uint8_t val)
 
 void lcdRefresh()
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdRefreshInfo();
+  memcpy(lcd_buf, pLcd->displayBuf, DISPLAY_BUF_SIZE);
+#else
   memcpy(lcd_buf, displayBuf, DISPLAY_BUF_SIZE);
+#endif
   lcd_refresh = true;
 }
 

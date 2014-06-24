@@ -150,9 +150,24 @@
   #define DISPLAY_BUF_SIZE   DISPLAY_PLAN_SIZE
 #endif
 
+#if defined(FBP_TARGET)
+typedef struct lcd_info_st
+{
+	uint8_t displayBuf[DISPLAY_BUF_SIZE];
+	uint8_t lastPos;
+	uint8_t nextPos;
+} lcd_info_st;
+
+lcd_info_st *getLcdInfo( void );
+lcd_info_st *getLcdRefreshInfo( void );
+
+#define lcdLastPos pLcd->lastPos
+#define lcdNextPos pLcd->nextPos
+#else
 extern uint8_t displayBuf[DISPLAY_BUF_SIZE];
 extern uint8_t lcdLastPos;
 extern uint8_t lcdNextPos;
+#endif
 
 #define DISPLAY_END          (displayBuf + DISPLAY_BUF_SIZE)
 #define ASSERT_IN_DISPLAY(p) assert((p) >= displayBuf && (p) < DISPLAY_END)
@@ -290,17 +305,14 @@ void lcdSetContrast();
   extern uint8_t lcd_buf[DISPLAY_BUF_SIZE];
 #endif
 
-#if defined(FBP_TARGET)
-extern int fbp_lcd_locked;
-#define FBP_LCD_LOCKED()	fbp_lcd_locked
-#else
-#define FBP_LCD_LOCKED()	0
-#endif
 #if defined(LUA)
   extern bool lcd_locked;
-  #define LCD_LOCKED() (lcd_locked || FBP_LCD_LOCKED())
+  #define LCD_LOCKED() lcd_locked
+#elif defined(FBP_TARGET)
+  extern int lcd_locked;
+  #define LCD_LOCKED() lcd_locked
 #else
-  #define LCD_LOCKED() (FBP_LCD_LOCKED())
+  #define LCD_LOCKED() 0
 #endif
 
 char * strAppend(char * dest, const char * source);

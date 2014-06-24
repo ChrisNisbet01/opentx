@@ -218,6 +218,9 @@ void menuGeneralSetup(uint8_t event)
   MENU(STR_MENURADIOSETUP, menuTabDiag, e_Setup, ITEM_SETUP_MAX+1, {0, CASE_RTCLOCK(2) CASE_RTCLOCK(2) CASE_BATTGRAPH(1) LABEL(SOUND), CASE_AUDIO(0) CASE_BUZZER(0) CASE_VOICE(0) CASE_CPUARM(0) CASE_CPUARM(0) CASE_CPUARM(0) 0, CASE_AUDIO(0) CASE_VARIO_CPUARM(LABEL(VARIO)) CASE_VARIO_CPUARM(0) CASE_VARIO_CPUARM(0) CASE_VARIO_CPUARM(0) CASE_VARIO_CPUARM(0) CASE_HAPTIC(LABEL(HAPTIC)) CASE_HAPTIC(0) CASE_HAPTIC(0) CASE_HAPTIC(0) 0, LABEL(ALARMS), 0, CASE_PCBSKY9X(0) CASE_PCBSKY9X(0) 0, 0, 0, IF_ROTARY_ENCODERS(0) LABEL(BACKLIGHT), 0, 0, CASE_CPUARM(0) CASE_REVPLUS(0) CASE_PWM_BACKLIGHT(0) CASE_PWM_BACKLIGHT(0) 0, CASE_SPLASH_PARAM(0) CASE_GPS(0) CASE_GPS(0) CASE_PXX(0) CASE_CPUARM(0) CASE_CPUARM(0) IF_FAI_CHOICE(0) CASE_MAVLINK(0) CASE_CPUARM(0) 0, COL_TX_MODE, CASE_PCBTARANIS(0) 1/*to force edit mode*/});
 
   uint8_t sub = m_posVert - 1;
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
 
   for (uint8_t i=0; i<LCD_LINES-1; i++) {
     uint8_t y = 1 + 1*FH + i*FH;
@@ -687,6 +690,9 @@ void menuGeneralSetup(uint8_t event)
 #if defined(SDCARD)
 void menuGeneralSdManagerInfo(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   SIMPLE_SUBMENU(STR_SD_INFO_TITLE, 1);
 
   lcd_putsLeft(2*FH, STR_SD_TYPE);
@@ -894,6 +900,9 @@ void onSdManagerMenu(const char *result)
 
 void menuGeneralSdManager(uint8_t _event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   FILINFO fno;
   DIR dir;
   char *fn;   /* This function is assuming non-Unicode cfg. */
@@ -1285,6 +1294,9 @@ void menuGeneralDiagKeys(uint8_t event)
 
 void menuGeneralDiagAna(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
 #if defined(PCBSKY9X) && !defined(REVA)
   #define ANAS_ITEMS_COUNT 4
 #elif defined(PCBSKY9X)

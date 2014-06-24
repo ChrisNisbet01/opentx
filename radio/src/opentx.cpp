@@ -162,29 +162,6 @@ const pm_uint8_t bchout_ar[] PROGMEM = {
     0x87, 0x8D, 0x93, 0x9C, 0xB1, 0xB4,
     0xC6, 0xC9, 0xD2, 0xD8, 0xE1, 0xE4 };
 
-#if defined(FBP_TARGET)
-int fbp_lcd_locked;
-#endif
-
-#if defined(FBP_TARGET)
-void lock_lcd_for_fbp( void )
-{
-    fbp_lcd_locked++;
-}
-
-void unlock_lcd_for_fbp( void )
-{
-    if ( fbp_lcd_locked > 0 )
-        fbp_lcd_locked--;
-}
-
-int is_lcd_locked_for_fbp( void )
-{
-    return FBP_LCD_LOCKED();
-}
-
-#endif
-
 uint8_t channel_order(uint8_t x)
 {
   return ( ((pgm_read_byte(bchout_ar + g_eeGeneral.templateSetup) >> (6-(x-1) * 2)) & 3 ) + 1 );

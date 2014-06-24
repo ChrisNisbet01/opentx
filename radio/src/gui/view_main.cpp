@@ -235,6 +235,9 @@ void displayTopBarGauge(xcoord_t x, int count, bool blinking=false)
 
 void displayTopBar()
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   uint8_t batt_icon_x;
   uint8_t altitude_icon_x;
 

@@ -36,19 +36,80 @@
 
 #include "opentx.h"
 
+#if defined(FBP_TARGET)
+typedef enum lcd_buf_t
+{
+	lcd_main = 0,
+	lcd_fbp = 1,
+	nb_lcd_bufs = 2
+} lcd_buf_t;
+
+static lcd_info_st lcdInfo[nb_lcd_bufs];
+
+#define DISPLAY_END (pLcd->displayBuf+DISPLAY_PLAN_SIZE)
+#define ASSERT_IN_DISPLAY(p) assert((p) >= pLcd->displayBuf && (p) < DISPLAY_END)
+#else
 uint8_t displayBuf[DISPLAY_BUF_SIZE];
+uint8_t lcdLastPos;
+uint8_t lcdNextPos;
+
+#define DISPLAY_END (displayBuf+DISPLAY_PLAN_SIZE)
+#define ASSERT_IN_DISPLAY(p) assert((p) >= displayBuf && (p) < DISPLAY_END)
+#endif
 
 #if defined(LUA)
 bool lcd_locked = false;
+#elif defined(FBP_TARGET)
+int lcd_locked;
+#endif
+
+#if defined(FBP_TARGET)
+void lock_lcd_for_fbp( void )
+{
+    lcd_locked++;
+}
+
+void unlock_lcd_for_fbp( void )
+{
+    if ( lcd_locked > 0 )
+        lcd_locked--;
+}
+
+int is_lcd_locked( void )
+{
+    return lcd_locked;
+}
+
+lcd_info_st *getLcdInfo( void )
+{
+	if ( CoGetCurTaskID() == mixerTaskId )
+		return &lcdInfo[lcd_fbp];
+	return &lcdInfo[lcd_main];
+}
+
+lcd_info_st *getLcdRefreshInfo( void )
+{
+	/* 
+		Called by the menu task when refreshing the LCD.
+		At this point we need the FBP displayBuf if the LCD is locked,
+		else return the normal menu task displayBuf.
+	*/
+	if ( is_lcd_locked() != 0 )
+		return &lcdInfo[lcd_fbp];
+	return &lcdInfo[lcd_main];
+}
 #endif
 
 void lcd_clear()
 {
-  memset(displayBuf, 0, sizeof(displayBuf));
-}
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
 
-uint8_t lcdLastPos;
-uint8_t lcdNextPos;
+  memset(pLcd->displayBuf, 0, sizeof(pLcd->displayBuf));
+#else
+  memset(displayBuf, 0, sizeof(displayBuf));
+#endif
+}
 
 #if defined(CPUARM)
 void lcdPutPattern(xcoord_t x, uint8_t y, const uint8_t * pattern, uint8_t width, uint8_t height, LcdFlags flags);
@@ -123,6 +184,9 @@ void lcd_putc(xcoord_t x, uint8_t y, const unsigned char c)
 
 void lcd_putsnAtt(xcoord_t x, uint8_t y, const pm_char * s, uint8_t len, LcdFlags mode)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   const xcoord_t orig_x = x;
 #if defined(CPUARM)
   const uint8_t orig_len = len;
@@ -315,6 +379,9 @@ void lcd_outdezNAtt(xcoord_t x, uint8_t y, lcdint_t val, LcdFlags flags, uint8_t
     }
   }
 
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   lcdLastPos = x;
   x -= fw;
   if (dblsize) x++;
@@ -524,6 +591,9 @@ void putsTime(xcoord_t x, uint8_t y, struct gtm t, LcdFlags att)
 
 void putsTimer(xcoord_t x, uint8_t y, putstime_t tme, LcdFlags att, LcdFlags att2)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   div_t qr;
 
   if (!(att & LEFT)) {
@@ -576,6 +646,9 @@ void putsTimer(xcoord_t x, uint8_t y, putstime_t tme, LcdFlags att, LcdFlags att
 // TODO to be optimized with putsTelemetryValue
 void putsVolts(xcoord_t x, uint8_t y, uint16_t volts, LcdFlags att)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   lcd_outdezAtt(x, y, (int16_t)volts, (~NO_UNIT) & (att | ((att&PREC2)==PREC2 ? 0 : PREC1)));
   if (~att & NO_UNIT) lcd_putcAtt(lcdLastPos, y, 'v', att);
 }
@@ -587,12 +660,18 @@ void putsVBat(xcoord_t x, uint8_t y, LcdFlags att)
 
 void putsStrIdx(xcoord_t x, uint8_t y, const pm_char *str, uint8_t idx, LcdFlags att)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   lcd_putsAtt(x, y, str, att & ~LEADING0);
   lcd_outdezNAtt(lcdNextPos, y, idx, att|LEFT, 2);
 }
 
 void putsMixerSource(xcoord_t x, uint8_t y, uint8_t idx, LcdFlags att)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
 #if defined(PCBTARANIS)
   if (idx == 0) {
     lcd_putsiAtt(x, y, STR_VSRCRAW, 0, att);
@@ -772,6 +851,9 @@ void putsTimerMode(xcoord_t x, uint8_t y, int8_t mode, LcdFlags att)
 #if defined(PCBTARANIS)
 void putsTrimMode(xcoord_t x, uint8_t y, uint8_t phase, uint8_t idx, LcdFlags att)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   trim_t v = getRawTrimValue(phase, idx);
   unsigned int mode = v.mode;
   unsigned int p = mode >> 1;
@@ -822,6 +904,9 @@ void putsRotaryEncoderMode(xcoord_t x, uint8_t y, uint8_t phase, uint8_t idx, Lc
 #if defined(FRSKY) || defined(CPUARM)
 void putsTelemetryValue(xcoord_t x, uint8_t y, lcdint_t val, uint8_t unit, LcdFlags att)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   convertUnit(val, unit);
   lcd_outdezAtt(x, y, val, att & (~NO_UNIT));
   if (!(att & NO_UNIT) && unit != UNIT_RAW) {
@@ -984,6 +1069,9 @@ void putsTelemetryChannel(xcoord_t x, uint8_t y, uint8_t channel, lcdint_t val, 
 #else // defined(FRSKY)
 void putsTelemetryChannel(xcoord_t x, uint8_t y, uint8_t channel, lcdint_t val, uint8_t att)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   switch (channel) {
     case TELEM_TIMER1-1:
     case TELEM_TIMER2-1:

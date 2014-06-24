@@ -376,6 +376,9 @@ tmr10ms_t menuEntryTime;
 #if defined(PCBTARANIS)
 bool check(check_event_t event, uint8_t curr, const MenuFuncP *menuTab, uint8_t menuTabSize, const pm_uint8_t *horTab, uint8_t horTabMax, vertpos_t maxrow, uint8_t flags)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   vertpos_t l_posVert = m_posVert;
   horzpos_t l_posHorz = m_posHorz;
 

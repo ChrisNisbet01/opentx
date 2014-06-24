@@ -231,7 +231,12 @@ void lcdSetRefVolt(uint8_t val)
 void lcdRefresh()
 {
   register Pio *pioptr;
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+  register uint8_t *p = pLcd->displayBuf;
+#else
   register uint8_t *p = displayBuf;
+#endif
   register uint32_t y;
   register uint32_t x;
   register uint32_t z;

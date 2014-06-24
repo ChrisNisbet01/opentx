@@ -101,6 +101,9 @@ void menuStatisticsView(uint8_t event)
 
 void menuStatisticsDebug(uint8_t event)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   TITLE(STR_MENUDEBUG);
 
   switch(event)

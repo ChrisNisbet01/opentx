@@ -58,6 +58,9 @@ void initLcdSpi()
 
 void setupSPIdma()
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdRefreshInfo();
+#endif
   RCC->AHB1ENR |= RCC_AHB1ENR_DMA1EN ;			// Enable DMA1 clock
   // Chan 0, 8-bit wide, Medium priority, memory increments
   DMA1_Stream7->CR &= ~DMA_SxCR_EN ;		// Disable DMA
@@ -192,6 +195,9 @@ void lcdRefresh(bool wait)
 #else
 void lcdRefresh()
 {  
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdRefreshInfo();
+#endif
   for (uint32_t y=0; y<LCD_H; y++) {
     uint8_t *p = &displayBuf[y/2 * LCD_W];
 

@@ -505,6 +505,9 @@ void menuTelemetryMavlinkDump(uint8_t event) {
  */
 void menuTelemetryMavlinkSetup(uint8_t event) {
 	
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
 	MENU(STR_MAVMENUSETUP_TITLE, menuTabModel, e_MavSetup, ITEM_MAVLINK_MAX + 1, {0, 0, 1/*to force edit mode*/});
 	
 	uint8_t sub = m_posVert - 1;

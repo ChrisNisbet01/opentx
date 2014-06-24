@@ -1733,7 +1733,7 @@ void varioWakeup();
 #if defined(FBP_TARGET)
 extern void lock_lcd_for_fbp( void );
 extern void unlock_lcd_for_fbp( void );
-extern int is_lcd_locked_for_fbp( void );
+extern int is_lcd_locked( void );
 extern "C" unsigned int get_free_mem( void );
 #endif
 

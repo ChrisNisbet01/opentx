@@ -108,6 +108,9 @@ void displayGpsTime()
 
 void displayGpsCoord(uint8_t y, char direction, int16_t bp, int16_t ap)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   if (frskyData.hub.gpsFix >= 0) {
     if (!direction) direction = '-';
     lcd_outdezAtt(TELEM_2ND_COLUMN, y, bp / 100, LEFT); // ddd before '.'
