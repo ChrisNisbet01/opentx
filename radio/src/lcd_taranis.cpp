@@ -38,6 +38,9 @@
 
 void lcdPutPattern(xcoord_t x, uint8_t y, const uint8_t * pattern, uint8_t width, uint8_t height, LcdFlags flags)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   bool blink = false;
   bool inv = false;
   if (flags & BLINK) {
@@ -118,6 +121,9 @@ void lcdPutPattern(xcoord_t x, uint8_t y, const uint8_t * pattern, uint8_t width
 
 void lcd_mask(uint8_t *p, uint8_t mask, LcdFlags att)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   ASSERT_IN_DISPLAY(p);
 
   if (att&FILL_WHITE) {
@@ -141,6 +147,9 @@ void lcd_mask(uint8_t *p, uint8_t mask, LcdFlags att)
 
 void lcd_plot(xcoord_t x, uint8_t y, LcdFlags att)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   uint8_t *p = &displayBuf[ y / 2 * LCD_W + x ];
   uint8_t mask = PIXEL_GREY_MASK(y, att);
   if (p<DISPLAY_END) {
@@ -153,6 +162,9 @@ void lcd_hlineStip(xcoord_t x, uint8_t y, xcoord_t w, uint8_t pat, LcdFlags att)
   if (y >= LCD_H) return;
   if (x+w > LCD_W) { w = LCD_W - x; }
 
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   uint8_t *p  = &displayBuf[ y / 2 * LCD_W + x ];
   uint8_t mask = PIXEL_GREY_MASK(y, att);
   while (w--) {
@@ -193,6 +205,9 @@ void lcd_vlineStip(xcoord_t x, int8_t y, int8_t h, uint8_t pat, LcdFlags att)
 
 void lcd_invert_line(int8_t y)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   uint8_t *p  = &displayBuf[y * 4 * LCD_W];
   for (xcoord_t x=0; x<LCD_W*4; x++) {
     ASSERT_IN_DISPLAY(p);
@@ -223,6 +238,9 @@ void lcd_img(xcoord_t x, uint8_t y, const pm_uchar * img, uint8_t idx, LcdFlags 
 
 void lcd_bmp(xcoord_t x, uint8_t y, const pm_uchar * img, uint8_t offset, uint8_t width)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   const pm_uchar *q = img;
   uint8_t w    = pgm_read_byte(q++);
   if (!width) width = w;

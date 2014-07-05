@@ -1806,6 +1806,9 @@ uint8_t editDelay(const uint8_t y, const uint8_t event, const uint8_t attr, cons
 #if defined(PCBTARANIS)
 void displayFlightModes(uint8_t x, uint8_t y, FlightModesType value)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
   lcd_puts(x, y, STR_FP);
   x = lcdNextPos + 1;
   for (uint8_t p=0; p<MAX_FLIGHT_MODES; p++) {

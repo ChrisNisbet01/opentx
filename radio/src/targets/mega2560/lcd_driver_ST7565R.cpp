@@ -110,10 +110,8 @@ void lcdRefresh()
   LCD_LOCK();
 #if defined(FBP_TARGET)
   lcd_info_st *pLcd = getLcdInfo();
-  uint8_t *p=pLcd->displayBuf;
-#else
-  uint8_t *p=displayBuf;
 #endif
+  uint8_t *p=displayBuf;
   for(uint8_t y=0; y < 8; y++) {
     lcdSendCtl(0x01);
     lcdSendCtl(0x10); //column addr 0

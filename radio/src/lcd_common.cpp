@@ -46,15 +46,11 @@ typedef enum lcd_buf_t
 
 static lcd_info_st lcdInfo[nb_lcd_bufs];
 
-#define DISPLAY_END (pLcd->displayBuf+DISPLAY_PLAN_SIZE)
-#define ASSERT_IN_DISPLAY(p) assert((p) >= pLcd->displayBuf && (p) < DISPLAY_END)
 #else
 uint8_t displayBuf[DISPLAY_BUF_SIZE];
 uint8_t lcdLastPos;
 uint8_t lcdNextPos;
 
-#define DISPLAY_END (displayBuf+DISPLAY_PLAN_SIZE)
-#define ASSERT_IN_DISPLAY(p) assert((p) >= displayBuf && (p) < DISPLAY_END)
 #endif
 
 #if defined(LUA)
@@ -104,17 +100,17 @@ void lcd_clear()
 {
 #if defined(FBP_TARGET)
   lcd_info_st *pLcd = getLcdInfo();
-
-  memset(pLcd->displayBuf, 0, sizeof(pLcd->displayBuf));
-#else
-  memset(displayBuf, 0, sizeof(displayBuf));
 #endif
+  memset(displayBuf, 0, sizeof(displayBuf));
 }
 
 #if defined(CPUARM)
 void lcdPutPattern(xcoord_t x, uint8_t y, const uint8_t * pattern, uint8_t width, uint8_t height, LcdFlags flags);
 void lcd_putcAtt(xcoord_t x, uint8_t y, const unsigned char c, LcdFlags flags)
 {
+#if defined(FBP_TARGET)
+  lcd_info_st *pLcd = getLcdInfo();
+#endif
 #if !defined(BOOT)
   const pm_uchar *q = (c < 0xC0) ? &font_5x7[(c-0x20)*5] : &font_5x7_extra[(c-0xC0)*5];
 #else
