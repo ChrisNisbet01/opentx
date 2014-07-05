@@ -121,7 +121,7 @@ void lcdPutPattern(xcoord_t x, uint8_t y, const uint8_t * pattern, uint8_t width
 
 void lcd_mask(uint8_t *p, uint8_t mask, LcdFlags att)
 {
-#if defined(FBP_TARGET)
+#if !defined(SIMU) && defined(FBP_TARGET)
   lcd_info_st *pLcd = getLcdInfo();
 #endif
   ASSERT_IN_DISPLAY(p);

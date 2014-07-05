@@ -161,20 +161,18 @@ typedef struct lcd_info_st
 lcd_info_st *getLcdInfo( void );
 lcd_info_st *getLcdRefreshInfo( void );
 
+#define displayBuf pLcd->dispBuf
 #define lcdLastPos pLcd->lastPos
 #define lcdNextPos pLcd->nextPos
-#define displayBuf pLcd->dispBuf
 
-#define DISPLAY_END (pLcd->dispBuf+DISPLAY_PLAN_SIZE)
-#define ASSERT_IN_DISPLAY(p) assert((p) >= pLcd->dispBuf && (p) < DISPLAY_END)
 #else
 extern uint8_t displayBuf[DISPLAY_BUF_SIZE];
 extern uint8_t lcdLastPos;
 extern uint8_t lcdNextPos;
+#endif
 
 #define DISPLAY_END          (displayBuf + DISPLAY_BUF_SIZE)
 #define ASSERT_IN_DISPLAY(p) assert((p) >= displayBuf && (p) < DISPLAY_END)
-#endif
 
 #if defined(PCBSTD) && defined(VOICE)
   extern volatile uint8_t LcdLock ;
