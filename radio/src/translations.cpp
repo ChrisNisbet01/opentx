@@ -96,6 +96,9 @@ const pm_char STR_OPEN9X[] PROGMEM =
 #endif
     ISTR(VKEYS)
     ISTR(VSWITCHES)
+#if defined(FBP_TARGET)
+    ISTR(FBP_SWITCHES)
+#endif
     ISTR(VSRCRAW)
     ISTR(VTMRMODES)
 #if defined(CPUM2560) || defined(CPUARM)
