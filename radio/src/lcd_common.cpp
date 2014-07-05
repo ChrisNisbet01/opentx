@@ -39,8 +39,8 @@
 #if defined(FBP_TARGET)
 typedef enum lcd_buf_t
 {
-	lcd_main = 0,
-	lcd_fbp = 1,
+	lcd_main    = 0,
+	lcd_fbp     = 1,
 	nb_lcd_bufs = 2
 } lcd_buf_t;
 

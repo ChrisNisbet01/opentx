@@ -433,9 +433,6 @@ void displayWarning(uint8_t event);
 
 #if defined(PCBTARANIS)
   void menuChannelsView(uint8_t event);
-#if defined(FBP_TARGET)
-void menuFBPView(uint8_t event);
-#endif
 #endif
 
 #define LABEL(...) (uint8_t)-1
