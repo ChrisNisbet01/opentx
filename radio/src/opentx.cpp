@@ -3460,7 +3460,8 @@ void mixerTask(void * pdata)
       static tmr10ms_t lastTMR = 0;
 
       tmr10ms_t tmr10ms = get_tmr10ms();
-      uint8_t tick10ms = (tmr10ms >= lastTMR ? tmr10ms - lastTMR : 1);
+      int tick10ms = tmr10ms != lastTMR;
+      lastTMR = tmr10ms;
       if (tick10ms) 
       {
         // temp debug run the FBP at roughly 100Hz
